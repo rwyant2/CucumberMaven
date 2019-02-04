@@ -1,6 +1,9 @@
 package stepdefs;
 
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import pages.*;
 
 public class CommonStepDefs {
@@ -9,19 +12,21 @@ public class CommonStepDefs {
 
     @Given("^user goes to html page$")
     public void user_goes_to_html5_page() {
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11");
-        System.out.println("place to put breakpoint");
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11");
         htmlPage.goToHTML5Page();
     }
 
+	@When("^user enters \"([^\"]*)\" in field where label contains \"([^\"]*)\"$")
+	public void user_enters_in_field_where_label_contains(String text, String label) {
+	    htmlPage.enterTextInField(text,label);
+	}
 
-    //
-//	@When("^user enters \"([^\"]*)\" in field where label contains \"([^\"]*)\"$")
-//	//@When("^user enters {string} in field where label contains {string}$")
-//	public void user_enters_in_field_where_label_contains(String text, String label) {
-//	    htmlPage.enterTextInField(text,label);
-//	    throw new cucumber.api.PendingException();
-//	}
+	@And("^user clicks button labeled \"([^\"]*)\"$")
+    public void user_clicks_button_labeled(String label) {
+        htmlPage.click(label);
+    }
 
+    @Then("^the text with id \"([^\"]*)\" displays \"([^\"]*)\"$")
+    public void the_text_with_id_displays(String id, String value) {
+        htmlPage.verifyTextField(id, value);
+    }
 }

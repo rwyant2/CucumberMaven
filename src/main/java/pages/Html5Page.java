@@ -8,4 +8,5 @@ public class Html5Page extends BasePage {
 	public void goToHTML5Page() {
 		driver.findElement(By.xpath("//a[@href='/html5']")).click();
 	}
+
 }
