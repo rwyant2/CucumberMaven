@@ -13,4 +13,4 @@ Scenario: Validate text field input
 Scenario: Intentional fail to verify errors are getting reported
   When user enters "wheeeeeee!" in field where label contains "What's your text?"
   And user clicks button labeled "Submit"
-  Then the text with id "textResult" displays "text"
+  Then the text with id "textResult" displays "banana"

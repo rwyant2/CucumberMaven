@@ -29,27 +29,18 @@ public class BasePage {
 		driver.get(landingPageURL);
 	}
 
-	//protected WebDriver getDriver() { return driver; }
-	//protected WebDriverWait getWait() { return wait; }
-	protected void waitUntil(By by) {
-		wait.until(ExpectedConditions.visibilityOfElementLocated(by));
-	}
-	
-	public void click(String label)
-	{
-		WebElement e = driver.findElement(By.xpath("//*[@value=\"" + label + "\"]"));
-		e.click();
-	}
-	
+	public void clickButton(String label) { driver.findElement(By.xpath("//*[@value=\"" + label + "\"]")).click(); }
+	public void clickLink(String label) { driver.findElement(By.xpath("//a[text()=\"" + label + "\"]")).click(); }
+
 	//I'm assuming each text field in this app will be implemented the same way
 	public void enterTextInField(String text,String label) {
-		// Ideally, you'd have an id, ngmodel, ngbind, or something unique to grab on to.
+		// Ideally, you'd have an id, ng-model, ng-bind, or something unique to grab on to.
 		// Why I'm doing it this way is to make a generic method for this
-		// That would mimic what an end-user would actualy see.
+		// That would mimic what an end-user would actually see.
 		label = cleanUpForXPath(label);
-		By by = By.xpath("//p[contains(.,\"" + label + "\")]/input");
-		wait.until(ExpectedConditions.visibilityOfElementLocated(by));
-		driver.findElement(by).sendKeys(text);
+		WebElement e = driver.findElement(By.xpath("//p[contains(.,\"" + label + "\")]/input"));
+		explicitWait(e);
+		e.sendKeys(text);
 	}
 	
 	private String cleanUpForXPath(String string) {
@@ -60,10 +51,23 @@ public class BasePage {
 	public void verifyTextField(String id, String value) {
 		WebElement e = driver.findElement(By.id(id));
 		explicitWait(e);
-		Assert.assertEquals("Mesaage",value,e.getText());
+		Assert.assertEquals("Failed on verifying " + id + ": ",value,e.getText());
 	}
 
-	public void explicitWait(WebElement e) {
+	private void explicitWait(WebElement e) {
 		wait.until(ExpectedConditions.visibilityOf(e));
+	}
+
+	public String getPageTitle() {
+		//todo: in SpringBootProject, give the page title element it's own id
+		WebElement e = driver.findElement(By.xpath("//h1"));
+		String header = e.getText();
+		switch(header) {
+			case "This is the index page! Hooray!": return "index";
+			case "HTML5 fun times": return "html5";
+			case "Result": return "results";
+			default: return "i dunno lol";
+		}
+
 	}
 }
