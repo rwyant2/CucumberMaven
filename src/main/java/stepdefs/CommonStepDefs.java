@@ -1,27 +1,35 @@
 package stepdefs;
 
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import org.junit.Assert;
 import pages.*;
 
 public class CommonStepDefs {
-    Html5Page htmlPage = new Html5Page();
-    //indexPage indexPage = new indexPage();
+    IndexPage indexPage = new IndexPage();
+    ResultsPage resultsPage = new ResultsPage();
 
     @Given("^user goes to html page$")
     public void user_goes_to_html5_page() {
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11");
-        System.out.println("place to put breakpoint");
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11");
-        htmlPage.goToHTML5Page();
+        switch(indexPage.getPageTitle()) {
+            case "index": indexPage.goToHTML5Page(); break;
+            case "results": resultsPage.goToHTML5Page(); break;
+            default: Assert.fail("Cannot navigate to HTML5 page");
+        }
     }
 
+	@When("^user enters \"([^\"]*)\" in field where label contains \"([^\"]*)\"$")
+	public void user_enters_in_field_where_label_contains(String text, String label) { indexPage.enterTextInField(text,label); }
 
-    //
-//	@When("^user enters \"([^\"]*)\" in field where label contains \"([^\"]*)\"$")
-//	//@When("^user enters {string} in field where label contains {string}$")
-//	public void user_enters_in_field_where_label_contains(String text, String label) {
-//	    htmlPage.enterTextInField(text,label);
-//	    throw new cucumber.api.PendingException();
-//	}
+	@And("^user clicks button labeled \"([^\"]*)\"$")
+    public void user_clicks_button_labeled(String label) {
+        indexPage.clickButton(label);
+    }
 
+    @Then("^the text with id \"([^\"]*)\" displays \"([^\"]*)\"$")
+    public void the_text_with_id_displays(String id, String value) {
+        indexPage.verifyTextField(id, value);
+    }
 }
