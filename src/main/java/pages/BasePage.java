@@ -31,6 +31,7 @@ public class BasePage {
 
 	public void clickButton(String label) { driver.findElement(By.xpath("//*[@value=\"" + label + "\"]")).click(); }
 	public void clickLink(String label) { driver.findElement(By.xpath("//a[text()=\"" + label + "\"]")).click(); }
+	public void clickWebElementWithId(String id) { driver.findElement(By.id(id)).click(); }
 
 	//I'm assuming each text field in this app will be implemented the same way
 	public void enterTextInField(String text,String label) {
@@ -54,6 +55,11 @@ public class BasePage {
 		Assert.assertEquals("Failed on verifying " + id + ": ",value,e.getText());
 	}
 
+	public void verifyTextFieldIsBlank(String id) {
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id(id)));
+		Assert.assertEquals(driver.findElement(By.id(id)).getText(),"");
+	}
+
 	private void explicitWait(WebElement e) {
 		wait.until(ExpectedConditions.visibilityOf(e));
 	}
@@ -70,4 +76,5 @@ public class BasePage {
 		}
 
 	}
+
 }

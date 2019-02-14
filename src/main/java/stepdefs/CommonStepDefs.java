@@ -32,4 +32,12 @@ public class CommonStepDefs {
     public void the_text_with_id_displays(String id, String value) {
         indexPage.verifyTextField(id, value);
     }
+
+    @Then("^the text with id \"([^\"]*)\" is blank$")
+    public void the_text_with_id_is_blank(String id) {
+        indexPage.verifyTextFieldIsBlank(id);
+    }
+
+    @When("user clicks webelement with id \"([^\"]*)\"$")
+    public void user_clicks_webelement_with_id(String id) { indexPage.clickWebElementWithId(id); }
 }
