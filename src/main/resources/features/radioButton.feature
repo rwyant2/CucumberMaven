@@ -1,4 +1,4 @@
-@textField @HTML5
+@radioButton @HTML5
 	
 Feature: Validate that the radio button selection is being displayed
 

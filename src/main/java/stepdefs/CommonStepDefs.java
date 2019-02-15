@@ -23,7 +23,13 @@ public class CommonStepDefs {
 	@When("^user enters \"([^\"]*)\" in field where label contains \"([^\"]*)\"$")
 	public void user_enters_in_field_where_label_contains(String text, String label) { indexPage.enterTextInField(text,label); }
 
-	@And("^user clicks button labeled \"([^\"]*)\"$")
+	@When("^user enters text \"([^\"]*)\" in element with id \"([^\"]*)\"$")
+    public void user_enters_text_in_element_with_id(String text, String id) { indexPage.enterTextInElement(text, id); }
+
+    @When("^user enters text \"([^\"]*)\" ending with Return in element with id \"([^\"]*)\"$")
+    public void user_enters_text_ending_with_Return_in_element_with_id(String text, String id) { indexPage.enterTextEndingWithReturnInElement(text, id); }
+
+    @And("^user clicks button labeled \"([^\"]*)\"$")
     public void user_clicks_button_labeled(String label) {
         indexPage.clickButton(label);
     }

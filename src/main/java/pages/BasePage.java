@@ -5,6 +5,7 @@ import java.io.File;
 
 import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -43,7 +44,19 @@ public class BasePage {
 		explicitWait(e);
 		e.sendKeys(text);
 	}
-	
+
+	public void enterTextInElement(String text, String id) {
+		WebElement e = driver.findElement(By.id(id));
+		explicitWait(e);
+		e.sendKeys(text);
+	}
+
+	public void enterTextEndingWithReturnInElement(String text, String id) {
+		WebElement e = driver.findElement(By.id(id));
+		explicitWait(e);
+		e.sendKeys(text + Keys.RETURN);
+	}
+
 	private String cleanUpForXPath(String string) {
 		string.replace("'", "\\'");
 		return string;
