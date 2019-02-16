@@ -44,6 +44,10 @@ public class CommonStepDefs {
         indexPage.verifyTextFieldIsBlank(id);
     }
 
-    @When("user clicks webelement with id \"([^\"]*)\"$")
+    @When("^user clicks webelement with id \"([^\"]*)\"$")
     public void user_clicks_webelement_with_id(String id) { indexPage.clickWebElementWithId(id); }
+
+    @When("^user selects \"([^\"]*)\" from dropdown with id \"([^\"]*)\"$")
+    public void user_selects_from_dropdown_with_id(String option, String id) { indexPage.selectDropDownOption(option, id); }
+
 }
