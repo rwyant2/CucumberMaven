@@ -6,6 +6,6 @@ import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(features="src/main/resources/features", glue="stepdefs")
-public class Runner {
+public class CukeRunner {
 
 }
