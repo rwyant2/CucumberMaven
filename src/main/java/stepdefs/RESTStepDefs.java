@@ -27,4 +27,10 @@ public class RESTStepDefs {
         Map<String, String> nameValueMap = nameValuePairs.asMap(String.class, String.class);
         RESTUtils.validateResponse(response, nameValueMap);
     }
+
+    //This should be able to support any JSON structure
+    @When("^send a \"([^\"]*)\" request to endpoint-resource \"([^\"]*)\" with the JSON \"([^\"]*)\"$")
+    public void send_a_request_to_endpoint_resource_with_the_JSON(String reqMethod, String endpoint, String jSONFile) {
+        response = RESTUtils.sendRequest(reqMethod, endpoint, jSONFile);
+    }
 }
