@@ -23,14 +23,13 @@ Scenario: POST request with values defined in JSONObject
     |age   |51      |
     |id    |*       |
 
-#Scenario: POST request defined in a SoapUI xml project file
-#  When send the request "Create" in SoapUI project "dummy.xml"
-#  Then the response comes back with the below values
-#    |name  |value   |
-#    |name  |Thundercracker|
-#    |salary|9002    |
-#    |age   |52      |
-#    |id    |*       |
+Scenario: POST request defined in a SoapUI xml project file
+  When send the request "Create" in SoapUI project "dummy.xml"
+  Then the response comes back with the below values
+    |name  |Thundercracker|
+    |salary|9002    |
+    |age   |52      |
+    |id    |*       |
 
 #Scenario: Test for an appropriate fail for a duplicate employee name
 #Scenario: Test for an appropriate fail for an unexpected value in the response

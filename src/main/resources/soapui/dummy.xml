@@ -1,5 +1,275 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="5dc343e4-b37b-46fa-a4e2-b1a4a1a2ddbe" activeEnvironment="Default" name="Project 1" resourceRoot="" soapui-version="5.5.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:RestService" id="d7498df8-b5c3-4a47-bc11-451d69d9746c" wadlVersion="http://wadl.dev.java.net/2009/02" name="http://dummy.restapiexample.com" type="rest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache/><con:endpoints><con:endpoint>http://dummy.restapiexample.com</con:endpoint></con:endpoints><con:resource name="Employees" path="/api/v1/employees" id="bc63e7de-d0a3-4528-acb3-00f0c1c9d9cb"><con:settings/><con:parameters/><con:method name="Emmployees" id="3794ad7a-fbb2-4039-85a3-0fffc3259a62" method="GET"><con:settings/><con:parameters/><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType>text/html; charset=UTF-8</con:mediaType><con:status>200</con:status><con:params/><con:element>html</con:element></con:representation><con:request name="GET example" id="b7fe93c2-c5ee-45ae-b7d2-2d074cfa19c8" mediaType="application/json"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://dummy.restapiexample.com</con:endpoint><con:request/><con:originalUri>http://dummy.restapiexample.com/api/v1/employees</con:originalUri><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method></con:resource><con:resource name="Single Employee" path="/api/v1/employee/{id}" id="28daaf43-0eb4-4c48-855e-7414ee3b7a57"><con:settings/><con:parameters><con:parameter><con:name>id</con:name><con:value>24882</con:value><con:style>TEMPLATE</con:style><con:default>24882</con:default></con:parameter></con:parameters><con:method name="Single Employee" id="3d2dec47-f0d9-4fee-a00f-1c27deaa229c" method="GET"><con:settings/><con:parameters/><con:representation type="FAULT"><con:mediaType>text/html;charset=UTF-8</con:mediaType><con:status>404</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType>text/html; charset=UTF-8</con:mediaType><con:status>200</con:status><con:params/><con:element>html</con:element></con:representation><con:request name="GET single employee" id="77ffc9c4-90aa-469c-8b45-851fe81c095a" mediaType="application/json"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://dummy.restapiexample.com</con:endpoint><con:request/><con:originalUri>http://dummy.restapiexample.com/api/v1/employee/</con:originalUri><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/><con:parameterOrder><con:entry>id</con:entry></con:parameterOrder></con:request></con:method></con:resource><con:resource name="Create" path="/api/v1/create" id="f86b8ff3-adff-4a89-b161-1141384ccd6e"><con:settings/><con:parameters/><con:method name="Create 1" id="e4d4d62d-a1af-43b5-85a0-ae6e1a0671a6" method="POST"><con:settings/><con:parameters/><con:representation type="RESPONSE"><con:mediaType>text/html; charset=UTF-8</con:mediaType><con:status>200</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="REQUEST"><con:mediaType>application/json</con:mediaType><con:params/></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Create" id="d1e21cfb-a997-4a66-94fd-ee7ba4b7067b" mediaType="application/json" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://dummy.restapiexample.com</con:endpoint><con:request>{"name":"Megatron",
-"salary":"9000",
-"age":"50"}</con:request><con:originalUri>http://dummy.restapiexample.com/api/v1/create</con:originalUri><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method></con:resource><con:resource name="Id" path="/api/v1/update/{id}" id="9429fda6-c6fc-4fe1-9036-9ab3912be831"><con:settings/><con:parameters><con:parameter><con:name>id</con:name><con:value>24882</con:value><con:style>TEMPLATE</con:style><con:default>24882</con:default></con:parameter></con:parameters><con:method name="Id 1" id="1abaa626-a61a-422b-9b57-a5eeb5ccec39" method="PUT"><con:settings/><con:parameters><con:parameter><con:name>id</con:name><con:value>id</con:value><con:style>TEMPLATE</con:style><con:default>id</con:default><con:path xsi:nil="true"/><con:description xsi:nil="true"/></con:parameter></con:parameters><con:representation type="REQUEST"><con:mediaType>application/json</con:mediaType><con:params/></con:representation><con:representation type="FAULT"><con:mediaType>text/html;charset=UTF-8</con:mediaType><con:status>404</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType>text/html; charset=UTF-8</con:mediaType><con:status>200</con:status><con:params/><con:element>html</con:element></con:representation><con:request name="Update" id="0ed3c44b-98b3-4320-b8ad-0ddad89e220f" mediaType="application/json" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://dummy.restapiexample.com</con:endpoint><con:request>{"name":"Galvatron","salary":"9001","age":"53"} 	
-</con:request><con:originalUri>http://dummy.restapiexample.com/api/v1/update/21/24882</con:originalUri><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters><entry key="id" value="24882" xmlns="http://eviware.com/soapui/config"/></con:parameters><con:parameterOrder><con:entry>id</con:entry></con:parameterOrder></con:request></con:method></con:resource><con:resource name="Delete" path="/api/v1/delete/{id}" id="3b9fc40f-35af-4ec2-9441-5d9a06dd88a6"><con:settings/><con:parameters><con:parameter><con:name>id</con:name><con:value>24882</con:value><con:style>TEMPLATE</con:style><con:default>24882</con:default></con:parameter></con:parameters><con:method name="Delete 1" id="7211b51d-95b3-41ef-a485-5a0684afbb05" method="DELETE"><con:settings/><con:parameters/><con:representation type="REQUEST"><con:mediaType>application/json</con:mediaType><con:params/></con:representation><con:representation type="FAULT"><con:mediaType>text/html;charset=UTF-8</con:mediaType><con:status>404</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType>text/html; charset=UTF-8</con:mediaType><con:status>200</con:status><con:params/><con:element>html</con:element></con:representation><con:request name="Delete" id="8a575237-e1da-486b-9e2a-2af4a0f3be0f" mediaType="application/json" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://dummy.restapiexample.com</con:endpoint><con:request/><con:originalUri>http://dummy.restapiexample.com/api/v1/delete/</con:originalUri><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters><entry key="id" value="25207" xmlns="http://eviware.com/soapui/config"/></con:parameters><con:parameterOrder><con:entry>id</con:entry></con:parameterOrder></con:request></con:method></con:resource></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
+<soapui-project id="5dc343e4-b37b-46fa-a4e2-b1a4a1a2ddbe" activeEnvironment="Default" name="dummy project" resourceRoot="" soapui-version="5.5.0" abortOnError="false" runType="SEQUENTIAL" xmlns="http://eviware.com/soapui/config">
+	<settings/>
+	<interface xsi:type="RestService" id="d7498df8-b5c3-4a47-bc11-451d69d9746c" wadlVersion="http://wadl.dev.java.net/2009/02" name="http://dummy.restapiexample.com" type="rest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<settings/>
+		<definitionCache/>
+		<endpoints>
+			<endpoint>http://dummy.restapiexample.com</endpoint>
+		</endpoints>
+		<resource name="Employees" path="/api/v1/employees" id="bc63e7de-d0a3-4528-acb3-00f0c1c9d9cb">
+			<settings/>
+			<parameters/>
+			<method name="Emmployees" id="3794ad7a-fbb2-4039-85a3-0fffc3259a62" method="GET">
+				<settings/>
+				<parameters/>
+				<representation type="RESPONSE">
+					<mediaType xsi:nil="true"/>
+					<status>0</status>
+					<params/>
+					<element>data</element>
+				</representation>
+				<representation type="RESPONSE">
+					<mediaType xsi:nil="true"/>
+					<status>0</status>
+					<params/>
+					<element>data</element>
+				</representation>
+				<representation type="RESPONSE">
+					<mediaType>text/html; charset=UTF-8</mediaType>
+					<status>200</status>
+					<params/>
+					<element>html</element>
+				</representation>
+				<request name="GET example" id="b7fe93c2-c5ee-45ae-b7d2-2d074cfa19c8" mediaType="application/json">
+					<settings>
+						<setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></setting>
+					</settings>
+					<endpoint>http://dummy.restapiexample.com</endpoint>
+					<request/>
+					<originalUri>http://dummy.restapiexample.com/api/v1/employees</originalUri>
+					<credentials>
+						<authType>No Authorization</authType>
+					</credentials>
+					<jmsConfig JMSDeliveryMode="PERSISTENT"/>
+					<jmsPropertyConfig/>
+					<parameters/>
+				</request>
+			</method>
+		</resource>
+		<resource name="Single Employee" path="/api/v1/employee/{id}" id="28daaf43-0eb4-4c48-855e-7414ee3b7a57">
+			<settings/>
+			<parameters>
+				<parameter>
+					<name>id</name>
+					<value>24882</value>
+					<style>TEMPLATE</style>
+					<default>24882</default>
+				</parameter>
+			</parameters>
+			<method name="Single Employee" id="3d2dec47-f0d9-4fee-a00f-1c27deaa229c" method="GET">
+				<settings/>
+				<parameters/>
+				<representation type="FAULT">
+					<mediaType>text/html;charset=UTF-8</mediaType>
+					<status>404</status>
+					<params/>
+					<element>html</element>
+				</representation>
+				<representation type="RESPONSE">
+					<mediaType>text/html; charset=UTF-8</mediaType>
+					<status>200</status>
+					<params/>
+					<element>html</element>
+				</representation>
+				<request name="GET single employee" id="77ffc9c4-90aa-469c-8b45-851fe81c095a" mediaType="application/json">
+					<settings>
+						<setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+							&lt;xml-fragment/>
+						</setting>
+					</settings>
+					<endpoint>http://dummy.restapiexample.com</endpoint>
+					<request/>
+					<originalUri>http://dummy.restapiexample.com/api/v1/employee/</originalUri>
+					<credentials>
+						<authType>No Authorization</authType>
+					</credentials>
+					<jmsConfig JMSDeliveryMode="PERSISTENT"/>
+					<jmsPropertyConfig/>
+					<parameters/>
+					<parameterOrder>
+						<entry>id</entry>
+					</parameterOrder>
+				</request>
+			</method>
+		</resource>
+		<resource name="Create" path="/api/v1/create" id="f86b8ff3-adff-4a89-b161-1141384ccd6e">
+			<settings/>
+			<parameters/>
+			<method name="Create 1" id="e4d4d62d-a1af-43b5-85a0-ae6e1a0671a6" method="POST">
+				<settings/>
+				<parameters/>
+				<representation type="RESPONSE">
+					<mediaType>text/html; charset=UTF-8</mediaType>
+					<status>200</status>
+					<params/>
+					<element>html</element>
+				</representation>
+				<representation type="REQUEST">
+					<mediaType>application/json</mediaType>
+					<params/>
+				</representation>
+				<representation type="RESPONSE">
+					<mediaType xsi:nil="true"/>
+					<status>0</status>
+					<params/>
+					<element>data</element>
+				</representation>
+				<representation type="RESPONSE">
+					<mediaType xsi:nil="true"/>
+					<status>0</status>
+					<params/>
+					<element>data</element>
+				</representation>
+				<representation type="RESPONSE">
+					<mediaType xsi:nil="true"/>
+					<status>0</status>
+					<params/>
+					<element>data</element>
+				</representation>
+				<representation type="RESPONSE">
+					<mediaType xsi:nil="true"/>
+					<status>0</status>
+					<params/>
+					<element>data</element>
+				</representation>
+				<representation type="RESPONSE">
+					<mediaType xsi:nil="true"/>
+					<status>0</status>
+					<params/>
+					<element>data</element>
+				</representation>
+				<request name="Create" id="d1e21cfb-a997-4a66-94fd-ee7ba4b7067b" mediaType="application/json" postQueryString="false">
+                    <settings>
+                        <setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></setting>
+                    </settings>
+					<endpoint>http://dummy.restapiexample.com</endpoint>
+					<request>{"name":"Thundercracker2","salary":"9002","age":"52"}</request>
+					<originalUri>http://dummy.restapiexample.com/api/v1/create</originalUri>
+					<credentials>
+						<authType>No Authorization</authType>
+					</credentials>
+					<jmsConfig JMSDeliveryMode="PERSISTENT"/>
+					<jmsPropertyConfig/>
+					<parameters/>
+				</request>
+			</method>
+		</resource>
+		<resource name="Id" path="/api/v1/update/{id}" id="9429fda6-c6fc-4fe1-9036-9ab3912be831">
+			<settings/>
+			<parameters>
+				<parameter>
+					<name>id</name>
+					<value>24882</value>
+					<style>TEMPLATE</style>
+					<default>24882</default>
+				</parameter>
+			</parameters>
+			<method name="Id 1" id="1abaa626-a61a-422b-9b57-a5eeb5ccec39" method="PUT">
+				<settings/>
+				<parameters>
+					<parameter>
+						<name>id</name>
+						<value>id</value>
+						<style>TEMPLATE</style>
+						<default>id</default>
+						<path xsi:nil="true"/>
+						<description xsi:nil="true"/>
+					</parameter>
+				</parameters>
+				<representation type="REQUEST">
+					<mediaType>application/json</mediaType>
+					<params/>
+				</representation>
+				<representation type="FAULT">
+					<mediaType>text/html;charset=UTF-8</mediaType>
+					<status>404</status>
+					<params/>
+					<element>html</element>
+				</representation>
+				<representation type="RESPONSE">
+					<mediaType>text/html; charset=UTF-8</mediaType>
+					<status>200</status>
+					<params/>
+					<element>html</element>
+				</representation>
+				<request name="Update" id="0ed3c44b-98b3-4320-b8ad-0ddad89e220f" mediaType="application/json" postQueryString="false">
+					<settings>
+						<setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+							<xml-fragment/>
+						</setting>
+					</settings>
+					<endpoint>http://dummy.restapiexample.com</endpoint>
+					<request>{"name":"Galvatron","salary":"9001","age":"53"}</request>
+					<originalUri>http://dummy.restapiexample.com/api/v1/update/21/24882</originalUri>
+					<credentials>
+						<authType>No Authorization</authType>
+					</credentials>
+					<jmsConfig JMSDeliveryMode="PERSISTENT"/>
+					<parameters>
+						<entry key="id" value="24882"/>
+					</parameters>
+					<parameterOrder>
+						<entry>id</entry>
+					</parameterOrder>
+				</request>
+			</method>
+		</resource>
+		<resource name="Delete" path="/api/v1/delete/{id}" id="3b9fc40f-35af-4ec2-9441-5d9a06dd88a6">
+			<settings/>
+			<parameters>
+				<parameter>
+					<name>id</name>
+					<value>24882</value>
+					<style>TEMPLATE</style>
+                    <default>24882</default>
+                </parameter>
+            </parameters>
+            <method name="Delete 1" id="7211b51d-95b3-41ef-a485-5a0684afbb05" method="DELETE">
+                <settings/>
+                <parameters/>
+                <representation type="REQUEST">
+                    <mediaType>application/json</mediaType>
+                    <params/>
+                </representation>
+                <representation type="FAULT">
+                    <mediaType>text/html;charset=UTF-8</mediaType>
+                    <status>404</status>
+                    <params/>
+                    <element>html</element>
+                </representation>
+                <representation type="RESPONSE">
+                    <mediaType>text/html; charset=UTF-8</mediaType>
+                    <status>200</status>
+                    <params/>
+                    <element>html</element>
+                </representation>
+                <request name="Delete" id="8a575237-e1da-486b-9e2a-2af4a0f3be0f" mediaType="application/json" postQueryString="false">
+                    <settings>
+                        <setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/>
+                        </setting>
+                    </settings>
+                    <endpoint>http://dummy.restapiexample.com</endpoint>
+                    <request/>
+                    <originalUri>http://dummy.restapiexample.com/api/v1/delete/</originalUri>
+                    <credentials>
+                        <authType>No Authorization</authType>
+                    </credentials>
+                    <jmsConfig JMSDeliveryMode="PERSISTENT"/>
+                    <jmsPropertyConfig/>
+                    <parameters>
+                        <entry key="id" value="26993"/>
+                    </parameters>
+                    <parameterOrder>
+                        <entry>id</entry>
+                    </parameterOrder>
+                </request>
+            </method>
+        </resource>
+    </interface>
+    <properties/>
+    <wssContainer/>
+    <oAuth2ProfileContainer/>
+    <oAuth1ProfileContainer/>
+    <sensitiveInformation/>
+</soapui-project>

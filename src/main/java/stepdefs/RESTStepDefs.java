@@ -33,4 +33,9 @@ public class RESTStepDefs {
     public void send_a_request_to_endpoint_resource_with_the_JSON(String reqMethod, String endpoint, String jSONFile) {
         response = RESTUtils.sendRequest(reqMethod, endpoint, jSONFile);
     }
+
+    @When("send the request \"([^\"]*)\" in SoapUI project \"([^\"]*)\"")
+    public void send_the_request_in_SoapUI_project(String reqName, String soapUiProjectFile) {
+        RESTUtils.sendRequest(reqName, soapUiProjectFile);
+    }
 }

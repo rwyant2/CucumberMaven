@@ -1,9 +1,5 @@
 package utils;
 
-
-//import jdk.nashorn.internal.parser.JSONParser;
-
-import com.google.common.io.CharStreams;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -13,33 +9,50 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-
+import org.jdom2.*;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.junit.Assert;
 
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Map;
-
-//import org.json.JSONObject; // has toMap, FileReader doesn't work
-import org.json.simple.JSONObject; // has no toMap, FileReader doesn't work
-
-//import com.google.gson.JSONObject;
-//import org.json.simple.*;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import com.fasterxml.jackson.core.json.ReaderBasedJsonParser;
-
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
+
+//attempt with dom4j
+//import org.dom4j.Document;
+//import org.dom4j.DocumentException;
+//import org.dom4j.Element;
+//import org.dom4j.Node;
+//import org.dom4j.io.SAXReader;
+
+//attempt with jdom2
+//import org.jdom2.input.SAXBuilder;
+
+//attempt with XPath
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
 
 public class RESTUtils {
 
     private String endpoint;
     private static String absPath = new File("").getAbsolutePath();
-    private static String filePath = absPath + "/src/main/resources/json/";
+    private static String jsonFilePath = absPath + "/src/main/resources/json/";
+    private static String soapUiFilePath = absPath + "/src/main/resources/soapui/";
     private JSONParser parser = new JSONParser();
 
     public String sendRequest(String reqMethod, String endpoint, Map<String, String> nameValueMap) {
@@ -78,6 +91,56 @@ public class RESTUtils {
 
         return response;
     }
+
+    public String sendRequest(String reqName, String soapUiProjectFile) {
+        String response = null;
+        File file = null;
+
+// attempt with XPath, works!
+        Document doc = null;
+        Node node = null;
+        String text = null;
+
+        try {
+            file = new File(soapUiFilePath + soapUiProjectFile);
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder;
+            dBuilder = dbFactory.newDocumentBuilder();
+            doc = dBuilder.parse(file);
+            doc.getDocumentElement().normalize();
+            XPath xPath =  XPathFactory.newInstance().newXPath();
+            node = (Node) xPath.compile("*//request[@name=\"GET single employee\"]").evaluate(doc,XPathConstants.NODE);
+            text = (String) xPath.compile("*//request[@name=\"GET single employee\"]/originalUri/text()").evaluate(doc,XPathConstants.STRING);
+
+// attempt with jdom2
+//        Document doc = null;
+//        List<Element> contentList = null;
+//        Element e = null;
+//        Element root = null;
+//        try {
+//            file = new File(soapUiFilePath + soapUiProjectFile);
+//            SAXBuilder builder = new SAXBuilder();
+//            doc = builder.build(file);
+//            contentList = doc.getRootElement().getChildren("request");
+
+// attempt with dom4j, can't find node
+//        Document doc = null;
+//        List nodes = null;
+//        Node node = null;
+//        Element e = null;
+//        try {
+//            file = new File(soapUiFilePath + soapUiProjectFile);
+//            SAXReader reader = new SAXReader();
+//            doc = reader.read(file);
+//            nodes = doc.selectNodes("*//request[@name=\"GET single employee\"]");
+//            node = doc.selectSingleNode("*//request[@name=\"GET single employee\"]");
+        } catch (Exception ex) {
+            Assert.fail("Problem reading SoapUI project file " + soapUiProjectFile);
+        }
+
+        return response;
+    }
+
 
     public void validateResponse(String response, Map<String, String> nameValueMap) {
 //        JSONParser parser = this.parser;
@@ -183,7 +246,7 @@ public class RESTUtils {
     private JSONObject parseJSONFile(String jSONFile) {
         JSONObject jSONObjectFromFile = null;
         try {
-            jSONObjectFromFile = (JSONObject) parser.parse(new FileReader(filePath + jSONFile));
+            jSONObjectFromFile = (JSONObject) parser.parse(new FileReader(jsonFilePath + jSONFile));
         } catch (Exception e) {
             Assert.fail("Problem parsing JSON from file " + jSONFile);
         }
