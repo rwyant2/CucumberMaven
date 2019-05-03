@@ -59,7 +59,7 @@ public class RESTUtils {
         String responseString = null;
         this.endpoint = endpoint;
         switch(reqMethod.toLowerCase()) {
-            case "post": responseString = sendPost(endpoint, nameValueMap); break;
+            case "post": responseString = sendPostMap(endpoint, nameValueMap); break;
 //            case "put": sendPut; break;
 //            case "get": sendGet; break;
 //            case "delete": sendDelete; break;
@@ -76,8 +76,9 @@ public class RESTUtils {
 
     public String sendRequest(String reqMethod, String endpoint, String jSONFile) {
         String response = null;
+        JSONObject json = parseJSONFile(jSONFile);
         switch(reqMethod.toLowerCase()) {
-            case "post": response = sendPost(endpoint, jSONFile); break;
+            case "post": response = sendPostJSON(endpoint, json); break;
 //            case "put": sendPut; break;
 //            case "get": sendGet; break;
 //            case "delete": sendDelete; break;
@@ -85,7 +86,7 @@ public class RESTUtils {
                 if (reqMethod.isEmpty()) {
                     Assert.fail("There's no request method. You are silly.");
                 } else {
-                    Assert.fail(reqMethod + " is currently unsupported as a request method");
+                    Assert.fail(reqMethod + " is not currently unsupported as a request method");
                 }
         }
 
@@ -95,11 +96,11 @@ public class RESTUtils {
     public String sendRequest(String reqName, String soapUiProjectFile) {
         String response = null;
         File file = null;
-
-// attempt with XPath, works!
         Document doc = null;
-        Node node = null;
-        String text = null;
+        //String endpoint = null;
+        String method = null;
+        JSONObject json = null;
+        XPath xPath =  XPathFactory.newInstance().newXPath();
 
         try {
             file = new File(soapUiFilePath + soapUiProjectFile);
@@ -108,34 +109,34 @@ public class RESTUtils {
             dBuilder = dbFactory.newDocumentBuilder();
             doc = dBuilder.parse(file);
             doc.getDocumentElement().normalize();
-            XPath xPath =  XPathFactory.newInstance().newXPath();
-            node = (Node) xPath.compile("*//request[@name=\"GET single employee\"]").evaluate(doc,XPathConstants.NODE);
-            text = (String) xPath.compile("*//request[@name=\"GET single employee\"]/originalUri/text()").evaluate(doc,XPathConstants.STRING);
-
-// attempt with jdom2
-//        Document doc = null;
-//        List<Element> contentList = null;
-//        Element e = null;
-//        Element root = null;
-//        try {
-//            file = new File(soapUiFilePath + soapUiProjectFile);
-//            SAXBuilder builder = new SAXBuilder();
-//            doc = builder.build(file);
-//            contentList = doc.getRootElement().getChildren("request");
-
-// attempt with dom4j, can't find node
-//        Document doc = null;
-//        List nodes = null;
-//        Node node = null;
-//        Element e = null;
-//        try {
-//            file = new File(soapUiFilePath + soapUiProjectFile);
-//            SAXReader reader = new SAXReader();
-//            doc = reader.read(file);
-//            nodes = doc.selectNodes("*//request[@name=\"GET single employee\"]");
-//            node = doc.selectSingleNode("*//request[@name=\"GET single employee\"]");
-        } catch (Exception ex) {
+        } catch (Exception e) {
             Assert.fail("Problem reading SoapUI project file " + soapUiProjectFile);
+        }
+
+        try {
+            this.endpoint = (String) xPath.compile("*//request[@name=\"" + reqName + "\"]/originalUri/text()").evaluate(doc, XPathConstants.STRING);
+        } catch (Exception e) {
+            Assert.fail("Problem finding endpoint for request " + reqName + "in " + soapUiProjectFile);
+        }
+
+        try {
+            method = (String) xPath.compile("*//request[@name=\"" + reqName + "\"]//ancestor::method/@method").evaluate(doc, XPathConstants.STRING);
+        } catch (Exception e) {
+            Assert.fail("Problem finding method for request " + reqName + "in " + soapUiProjectFile);
+        }
+
+        try {
+            json = (JSONObject) parser.parse((String) xPath.compile("*//request[@name=\"" + reqName + "\"]/request").evaluate(doc, XPathConstants.STRING));
+        } catch (Exception e) {
+            Assert.fail("Problem finding message body for request " + reqName + "in " + soapUiProjectFile);
+        }
+
+        switch(method.toLowerCase()) {
+            case "post": response = sendPostJSON(endpoint, json); break;
+//            case "put": sendPut; break;
+//            case "get": sendGet; break;
+//            case "delete": sendDelete; break;
+            default: Assert.fail(method + " is not currently unsupported as a request method");
         }
 
         return response;
@@ -143,7 +144,7 @@ public class RESTUtils {
 
 
     public void validateResponse(String response, Map<String, String> nameValueMap) {
-//        JSONParser parser = this.parser;
+        JSONParser parser = this.parser;
         JSONObject responseJSON = new JSONObject();
         try {
             responseJSON = (JSONObject) parser.parse(response);
@@ -164,7 +165,7 @@ public class RESTUtils {
         }
     }
 
-    private String sendPost(String endpoint, Map<String, String> nameValueMap) {
+    private String sendPostMap(String endpoint, Map<String, String> nameValueMap) {
         String responseString = null;
         HttpPost httpPost = new HttpPost(validateEndpoint(endpoint));
         httpPost.setConfig(buildConfig());
@@ -178,15 +179,29 @@ public class RESTUtils {
         return responseString;
     }
 
-    private String sendPost(String endpoint, String jSONFile) {
+//    private String sendPost(String endpoint, String jSONFile) {
+//        String responseString = null;
+//        HttpPost httpPost = new HttpPost(validateEndpoint(endpoint));
+//        httpPost.setConfig(buildConfig());
+//        JSONObject jSONObjectFromFile = parseJSONFile(jSONFile);
+//        httpPost.setEntity(buildEntity(jSONObjectFromFile));
+//
+//        try {
+//            responseString =  convertResponseToString(buildClient().execute(httpPost));
+//        } catch (IOException e) {
+//            Assert.fail("Problem sending POST request to " + endpoint);
+//        }
+//        return responseString;
+//    }
+
+    private String sendPostJSON(String endpoint, JSONObject json) {
         String responseString = null;
         HttpPost httpPost = new HttpPost(validateEndpoint(endpoint));
         httpPost.setConfig(buildConfig());
-        JSONObject jSONObjectFromFile = parseJSONFile (jSONFile);
-        httpPost.setEntity(buildEntity((JSONObject) jSONObjectFromFile));
+        httpPost.setEntity(buildEntity(json));
 
         try {
-            responseString =  convertResponseToString(buildClient().execute(httpPost));
+            responseString = convertResponseToString(buildClient().execute(httpPost));
         } catch (IOException e) {
             Assert.fail("Problem sending POST request to " + endpoint);
         }

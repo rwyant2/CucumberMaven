@@ -36,6 +36,6 @@ public class RESTStepDefs {
 
     @When("send the request \"([^\"]*)\" in SoapUI project \"([^\"]*)\"")
     public void send_the_request_in_SoapUI_project(String reqName, String soapUiProjectFile) {
-        RESTUtils.sendRequest(reqName, soapUiProjectFile);
+        response = RESTUtils.sendRequest(reqName, soapUiProjectFile);
     }
 }

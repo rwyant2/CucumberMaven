@@ -144,7 +144,7 @@
                         <setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></setting>
                     </settings>
 					<endpoint>http://dummy.restapiexample.com</endpoint>
-					<request>{"name":"Thundercracker2","salary":"9002","age":"52"}</request>
+					<request>{"name":"Thundercracker","salary":"9002","age":"52"}</request>
 					<originalUri>http://dummy.restapiexample.com/api/v1/create</originalUri>
 					<credentials>
 						<authType>No Authorization</authType>
