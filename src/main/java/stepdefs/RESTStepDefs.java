@@ -38,4 +38,15 @@ public class RESTStepDefs {
     public void send_the_request_in_SoapUI_project(String reqName, String soapUiProjectFile) {
         response = RESTUtils.sendRequest(reqName, soapUiProjectFile);
     }
+
+    @When("^send a \"([^\"]*)\" request to endpoint-resource \"([^\"]*)\"$")
+    public void send_a_request_to_endpoint_resource(String reqName, String endpoint) {
+        response = RESTUtils.sendRequestNoValues(reqName, endpoint);
+    }
+
+    @Then("^the response comes back with the below keys$")
+    public void the_response_comes_back_with_the_below_keys(DataTable nameTable) {
+        Map<String, String> nameMap = nameTable.asMap(String.class, String.class);
+        RESTUtils.validateResponseNoValues(response, nameMap);
+    }
 }

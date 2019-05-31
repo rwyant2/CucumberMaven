@@ -3,6 +3,7 @@ package utils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -10,6 +11,7 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.junit.Assert;
@@ -142,6 +144,22 @@ public class RESTUtils {
         return response;
     }
 
+    public String sendRequestNoValues(String reqMethod, String endpoint) {
+        String response = null;
+        switch(reqMethod.toLowerCase()) {
+//            case "post": response = sendPost(endpoint); break;
+//            case "put": sendPut; break;
+            case "get": response = sendGetNoValues(endpoint); break;
+//            case "delete": sendDelete; break;
+            default:
+                if (reqMethod.isEmpty()) {
+                    Assert.fail("There's no request method. You are silly.");
+                } else {
+                    Assert.fail(reqMethod + " is not currently unsupported as a request method");
+                }
+        }
+        return response;
+    }
 
     public void validateResponse(String response, Map<String, String> nameValueMap) {
         JSONParser parser = this.parser;
@@ -165,6 +183,35 @@ public class RESTUtils {
         }
     }
 
+    public void validateResponseNoValues(String response, Map<String, String> nameMap) {
+        JSONParser parser = this.parser;
+
+//todo: logic to handle either a JSONObject or JSONArray
+        JSONObject responseJSON = null;
+        try {
+            JSONArray responseJSONArray = (JSONArray) parser.parse(response);
+// in this particular situation, I only care about getting one result
+            responseJSON = (JSONObject) responseJSONArray.get(1);
+        } catch (Exception e) {
+            Assert.fail("Problem parsing response into a JSONObject: " + response);
+        }
+
+        Assert.assertEquals("Expected " + nameMap.size() + " elements in response but got " + responseJSON.size(), responseJSON.size(), nameMap.size());
+
+        for(Map.Entry<String, String> entry : nameMap.entrySet()) {
+            String actualKey = (String) responseJSON.get(entry.getKey());
+            if(actualKey == null){
+                Assert.fail("Expected element " + entry.getKey() + " not found.");
+            }
+        }
+
+        for(Object key : responseJSON.keySet()) {
+            if(!nameMap.containsKey(key)) {
+                Assert.fail("Unexpected element " + key + " found in response.");
+            }
+        }
+    }
+
     private String sendPostMap(String endpoint, Map<String, String> nameValueMap) {
         String responseString = null;
         HttpPost httpPost = new HttpPost(validateEndpoint(endpoint));
@@ -179,21 +226,6 @@ public class RESTUtils {
         return responseString;
     }
 
-//    private String sendPost(String endpoint, String jSONFile) {
-//        String responseString = null;
-//        HttpPost httpPost = new HttpPost(validateEndpoint(endpoint));
-//        httpPost.setConfig(buildConfig());
-//        JSONObject jSONObjectFromFile = parseJSONFile(jSONFile);
-//        httpPost.setEntity(buildEntity(jSONObjectFromFile));
-//
-//        try {
-//            responseString =  convertResponseToString(buildClient().execute(httpPost));
-//        } catch (IOException e) {
-//            Assert.fail("Problem sending POST request to " + endpoint);
-//        }
-//        return responseString;
-//    }
-
     private String sendPostJSON(String endpoint, JSONObject json) {
         String responseString = null;
         HttpPost httpPost = new HttpPost(validateEndpoint(endpoint));
@@ -204,6 +236,20 @@ public class RESTUtils {
             responseString = convertResponseToString(buildClient().execute(httpPost));
         } catch (IOException e) {
             Assert.fail("Problem sending POST request to " + endpoint);
+        }
+        return responseString;
+    }
+
+    private String sendGetNoValues(String endpoint) {
+        String responseString = null;
+        HttpGet httpGet = new HttpGet(validateEndpoint(endpoint));
+        httpGet.setConfig(buildConfig());
+//        httpGet.setEntity(buildEntity(json));
+
+        try {
+            responseString = convertResponseToString(buildClient().execute(httpGet));
+        } catch (IOException e) {
+            Assert.fail("Problem sending GET request to " + endpoint);
         }
         return responseString;
     }
