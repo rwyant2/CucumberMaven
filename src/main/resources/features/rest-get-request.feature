@@ -52,34 +52,40 @@ Scenario: Set up test data
     |age   |40        |
 
 Scenario: GET request with values defined in the feature file
-  When send a "get" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/employees" with the below values
-    |id|4502|
-#
-#  Then the response comes back with the below values
-#    |id             |4502     |
-#    |employee_name  |Galvatron|
-#    |employee_salary|1000     |
-#    |employee_age   |40       |
-#    |profile_image  ||
-#
-#Scenario: GET request with values defined in JSONObject
-#  When send a "Get" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/create" with the JSON "get-employee.json"
-#
-#  Then the response comes back with the below values
-#    |name  |Skywarp |
-#    |salary|9001    |
-#    |age   |51      |
-#    |id    |*       |
-#
-#Scenario: GET request with values defined in a SoapUI xml project file
-#  When send the request "Create" in SoapUI project "dummy.xml"
-#
-#  Then the response comes back with the below values
-#    |name  |Thundercracker|
-#    |salary|9002    |
-#    |age   |52      |
-#    |id    |*       |
-#
-#Scenario: GET request with invalid value
-#Scenario: Validate GET response against a JSONObject
+  When send a "get" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/employee" with the below values
+    |id|11835|
+
+  Then the response comes back with the below values
+    |id             |11835     |
+    |employee_name  |Galvatron|
+    |employee_salary|1000     |
+    |employee_age   |40       |
+    |profile_image  ||
+
+Scenario: GET request with invalid value
+  When send a "get" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/employee" with the below values
+    |id|banana|
+
+  Then the response comes back with the below values
+    |id             |banana   |
+    |employee_name  |Galvatron|
+    |employee_salary|1000     |
+    |employee_age   |40       |
+    |profile_image  ||
+
+Scenario: GET request with values defined in a SoapUI xml project file
+  When send the request "GET single employee" in SoapUI project "dummy.xml"
+
+  Then the response comes back with the below values
+    |id             |11835     |
+    |employee_name  |Galvatron|
+    |employee_salary|1000     |
+    |employee_age   |40       |
+    |profile_image  ||
+
+
+Scenario: Validate GET response against a JSONObject
+  When send the request "GET single employee" in SoapUI project "dummy.xml"
+  Then the response matches the JSON in "get-single-employee.json"
+
 #Scenario: GET request using dynamic value

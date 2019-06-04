@@ -49,4 +49,9 @@ public class RESTStepDefs {
         Map<String, String> nameMap = nameTable.asMap(String.class, String.class);
         RESTUtils.validateResponseNoValues(response, nameMap);
     }
+
+    @Then("^the response matches the JSON in \"([^\"]*)\"$")
+    public void the_response_matches_the_json_in (String filename) {
+        RESTUtils.validateResponseJSON(response, filename);
+    }
 }
