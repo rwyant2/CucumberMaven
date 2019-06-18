@@ -3,6 +3,7 @@ package utils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -10,6 +11,7 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.junit.Assert;
@@ -19,7 +21,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Map;
 
 //attempt with dom4j
@@ -40,12 +41,9 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 public class RESTUtils {
 
@@ -61,7 +59,7 @@ public class RESTUtils {
         switch(reqMethod.toLowerCase()) {
             case "post": responseString = sendPostMap(endpoint, nameValueMap); break;
 //            case "put": sendPut; break;
-//            case "get": sendGet; break;
+            case "get": responseString = sendGetMap(endpoint, nameValueMap); break;
 //            case "delete": sendDelete; break;
             default:
                 if (reqMethod.isEmpty()) {
@@ -125,25 +123,56 @@ public class RESTUtils {
             Assert.fail("Problem finding method for request " + reqName + "in " + soapUiProjectFile);
         }
 
-        try {
-            json = (JSONObject) parser.parse((String) xPath.compile("*//request[@name=\"" + reqName + "\"]/request").evaluate(doc, XPathConstants.STRING));
-        } catch (Exception e) {
-            Assert.fail("Problem finding message body for request " + reqName + "in " + soapUiProjectFile);
-        }
-
         switch(method.toLowerCase()) {
-            case "post": response = sendPostJSON(endpoint, json); break;
+            case "post":
+                try {
+                    json = (JSONObject) parser.parse((String) xPath.compile("*//request[@name=\"" + reqName + "\"]/request").evaluate(doc, XPathConstants.STRING));
+                } catch (Exception e) {
+                    Assert.fail("Problem finding message body for request " + reqName + "in " + soapUiProjectFile);
+                }
+
+                response = sendPostJSON(endpoint, json);
+                break;
+
 //            case "put": sendPut; break;
-//            case "get": sendGet; break;
+
+            case "get":
+
+                try {
+                    response = sendGetSoapUI(endpoint, (NodeList) xPath.evaluate("*//request[@name=\"" + reqName + "\"]/parameters/entry", doc, XPathConstants.NODESET));
+                } catch (Exception e) {
+                    Assert.fail("Problem finding parameters for request " + reqName + "in " + soapUiProjectFile);
+                }
+
+                break;
+
 //            case "delete": sendDelete; break;
+
             default: Assert.fail(method + " is not currently unsupported as a request method");
         }
 
         return response;
     }
 
+    public String sendRequestNoValues(String reqMethod, String endpoint) {
+        String response = null;
+        switch(reqMethod.toLowerCase()) {
+//            case "post": response = sendPost(endpoint); break;
+//            case "put": sendPut; break;
+            case "get": response = sendGet(endpoint); break;
+//            case "delete": sendDelete; break;
+            default:
+                if (reqMethod.isEmpty()) {
+                    Assert.fail("There's no request method. You are silly.");
+                } else {
+                    Assert.fail(reqMethod + " is not currently unsupported as a request method");
+                }
+        }
+        return response;
+    }
 
     public void validateResponse(String response, Map<String, String> nameValueMap) {
+//todo: make this robust enough to handle JSONArrays and nested JSONs
         JSONParser parser = this.parser;
         JSONObject responseJSON = new JSONObject();
         try {
@@ -152,7 +181,7 @@ public class RESTUtils {
             Assert.fail("Problem parsing response into a JSONObject: " + response);
         }
 
-        Assert.assertTrue("Expected " + nameValueMap.size() + " elements in response but got " + responseJSON.size(), responseJSON.size() == nameValueMap.size());
+        Assert.assertTrue("Difference amount of elements than expected: ", responseJSON.size() == nameValueMap.size());
 
         for(Map.Entry<String, String> entry : nameValueMap.entrySet()) {
             String actualValue = (String) responseJSON.get(entry.getKey());
@@ -163,6 +192,51 @@ public class RESTUtils {
                 Assert.assertTrue("Expected " + entry.getKey() + " = " + entry.getValue() + " but got " + actualValue, entry.getValue().equals(actualValue));
             }
         }
+    }
+
+    public void validateResponseNoValues(String response, Map<String, String> nameMap) {
+        JSONParser parser = this.parser;
+//todo: logic to handle either a JSONObject or JSONArray
+        JSONObject responseJSON = null;
+        try {
+            JSONArray responseJSONArray = (JSONArray) parser.parse(response);
+// in this particular situation, I only care about getting one result
+            responseJSON = (JSONObject) responseJSONArray.get(1);
+        } catch (Exception e) {
+            Assert.fail("Problem parsing response into a JSONObject: " + response);
+        }
+
+        Assert.assertEquals("Difference amount of elements than expected: ", nameMap.size(), responseJSON.size());
+
+        for(Map.Entry<String, String> entry : nameMap.entrySet()) {
+            String actualKey = (String) responseJSON.get(entry.getKey());
+            if(actualKey == null){
+                Assert.fail("Expected element \"" + entry.getKey() + "\" not found.");
+            }
+        }
+
+        for(Object key : responseJSON.keySet()) {
+            if(!nameMap.containsKey(key)) {
+                Assert.fail("Unexpected element \"" + key + "\" found in response.");
+            }
+        }
+    }
+
+    public void validateResponseJSON(String response, String jSONFilename) {
+        //todo: make this robust enough to handle JSONArrays and nested JSONs
+        //todo maybe make parsing it's own method?
+        JSONParser parser = this.parser;
+        JSONObject responseJSON = new JSONObject();
+        try {
+            responseJSON = (JSONObject) parser.parse(response);
+        } catch (Exception e) {
+            Assert.fail("Problem parsing response into a JSONObject: " + response);
+        }
+
+        JSONObject expectedJSON = parseJSONFile(jSONFilename);
+
+        Assert.assertEquals("Expected message body different than response.", expectedJSON, responseJSON);
+
     }
 
     private String sendPostMap(String endpoint, Map<String, String> nameValueMap) {
@@ -179,21 +253,6 @@ public class RESTUtils {
         return responseString;
     }
 
-//    private String sendPost(String endpoint, String jSONFile) {
-//        String responseString = null;
-//        HttpPost httpPost = new HttpPost(validateEndpoint(endpoint));
-//        httpPost.setConfig(buildConfig());
-//        JSONObject jSONObjectFromFile = parseJSONFile(jSONFile);
-//        httpPost.setEntity(buildEntity(jSONObjectFromFile));
-//
-//        try {
-//            responseString =  convertResponseToString(buildClient().execute(httpPost));
-//        } catch (IOException e) {
-//            Assert.fail("Problem sending POST request to " + endpoint);
-//        }
-//        return responseString;
-//    }
-
     private String sendPostJSON(String endpoint, JSONObject json) {
         String responseString = null;
         HttpPost httpPost = new HttpPost(validateEndpoint(endpoint));
@@ -206,6 +265,47 @@ public class RESTUtils {
             Assert.fail("Problem sending POST request to " + endpoint);
         }
         return responseString;
+    }
+
+    private String sendGet(String endpoint) {
+        String responseString = null;
+        HttpGet httpGet = new HttpGet(validateEndpoint(endpoint));
+        httpGet.setConfig(buildConfig());
+
+        try {
+            responseString = convertResponseToString(buildClient().execute(httpGet));
+        } catch (IOException e) {
+            Assert.fail("Problem sending GET request to " + endpoint);
+        }
+        return responseString;
+    }
+
+    private String sendGetMap(String endpoint, Map<String, String> nameValueMap) {
+
+//todo: have this support queries and more than one value per key
+//todo: make this more generic and flexible to support both queries and direct links
+        for(Map.Entry<String,String> entry : nameValueMap.entrySet()) {
+            //endpoint = endpoint + "?" + entry.getKey() + "=" + entry.getValue(); //format not used on the dummy
+            endpoint = endpoint + "/" + entry.getValue();
+        }
+
+        return sendGet(endpoint);
+    }
+
+    private String sendGetSoapUI(String endpoint, NodeList reqParams) {
+
+//todo: have this support queries and more than one value per key
+//todo: support for query format ?id-123,name=whatever,etc
+//todo: make this more generic and flexible to support both queries and direct links
+
+//        for(int i=0; i<reqParams.getLength(); i++) {
+        Node n = reqParams.item(0);
+        NamedNodeMap m = n.getAttributes();
+        String s = m.getNamedItem("value").toString();
+        String sub = s.substring(s.indexOf("\"") + 1,s.lastIndexOf("\""));
+        endpoint = endpoint + sub;
+
+        return sendGet(endpoint);
     }
 
     private String convertResponseToString(HttpResponse response) {
@@ -268,19 +368,16 @@ public class RESTUtils {
         return jSONObjectFromFile;
     }
 
-//    HttpClient httpClient = HttpClientBuilder.create().build();
-//    RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(10000).build();
-//    HttpPost httpPost = new HttpPost("http://frengly.com/frengly/data/translateREST");
-//		httpPost.setConfig(requestConfig);
-//
-//    StringEntity entity = new StringEntity(object.toJSONString(), "UTF-8");
-//    BasicHeader basicHeader = new BasicHeader(HTTP.CONTENT_TYPE,"application/json");
-//		entity.setContentType(basicHeader);
-//		httpPost.setEntity(entity);
-//
-//    HttpResponse response = httpClient.execute(httpPost);
-//    InputStream is = response.getEntity().getContent();
-//    String strResponse = IOUtils.toString(is, "UTF-8");
-//
-//		System.out.println(strResponse);
+    public String getId(String response) {
+        JSONParser parser = this.parser;
+        JSONObject responseJSON = new JSONObject();
+        try {
+            responseJSON = (JSONObject) parser.parse(response);
+        } catch (Exception e) {
+            Assert.fail("Problem parsing response into a JSONObject: " + response);
+        }
+
+        return (String) responseJSON.get("id");
+    }
+
 }
