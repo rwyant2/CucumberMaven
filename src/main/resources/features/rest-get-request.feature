@@ -42,21 +42,33 @@ Feature: Validate I can send a get request to a REST endpoint
       |employee_age   |
       |banana         |
 
-# These are going to require editing. The samples I'm using don't have a way to look up by name
-# even though names have to be unique.  While I'd build dynamic requests in reality,
-# the purpose of this feature is to make sure my stepdefs work.
-Scenario: Set up test data
+# The example API I'm using can only look up by id even though names must be unique.
+# If this were in the real world, I could implement something like this scenario to
+# use any id and verify the parts of the response I care about.
+Scenario: Set up test data and validate GET response against dynamic test data
   When send a "post" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/create" with the below values
-    |name  |Galvatron |
-    |salary|1000      |
-    |age   |40        |
+    |name  |Galvatron|
+    |salary|1000     |
+    |age   |40       |
+  Then save the id in the response
+  Then send a "get" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/employee" with the previously saved id
+  Then the response comes back with the below values
+    |id             |*|
+    |employee_name  |Galvatron|
+    |employee_salary|1000     |
+    |employee_age   |40       |
+    |profile_image  ||
+
+# The purpose of this is to verify my stepdefs more than it is to test the API itself.
+# To that end, these id values are hard-coded to ensure I can verify using this feature
+# file, a JSON file, or a SoapUI file.
 
 Scenario: GET request with values defined in the feature file
   When send a "get" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/employee" with the below values
-    |id|11835|
+    |id|59435|
 
   Then the response comes back with the below values
-    |id             |11835     |
+    |id             |59435    |
     |employee_name  |Galvatron|
     |employee_salary|1000     |
     |employee_age   |40       |
@@ -75,17 +87,14 @@ Scenario: GET request with invalid value
 
 Scenario: GET request with values defined in a SoapUI xml project file
   When send the request "GET single employee" in SoapUI project "dummy.xml"
-
   Then the response comes back with the below values
-    |id             |11835     |
+    |id             |59435    |
     |employee_name  |Galvatron|
     |employee_salary|1000     |
     |employee_age   |40       |
     |profile_image  ||
 
-
 Scenario: Validate GET response against a JSONObject
   When send the request "GET single employee" in SoapUI project "dummy.xml"
   Then the response matches the JSON in "get-single-employee.json"
 
-#Scenario: GET request using dynamic value

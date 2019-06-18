@@ -45,7 +45,6 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-
 public class RESTUtils {
 
     private String endpoint;
@@ -182,7 +181,7 @@ public class RESTUtils {
             Assert.fail("Problem parsing response into a JSONObject: " + response);
         }
 
-        Assert.assertTrue("Expected " + nameValueMap.size() + " elements in response but got " + responseJSON.size(), responseJSON.size() == nameValueMap.size());
+        Assert.assertTrue("Difference amount of elements than expected: ", responseJSON.size() == nameValueMap.size());
 
         for(Map.Entry<String, String> entry : nameValueMap.entrySet()) {
             String actualValue = (String) responseJSON.get(entry.getKey());
@@ -207,18 +206,18 @@ public class RESTUtils {
             Assert.fail("Problem parsing response into a JSONObject: " + response);
         }
 
-        Assert.assertEquals("Expected " + nameMap.size() + " elements in response but got " + responseJSON.size(), responseJSON.size(), nameMap.size());
+        Assert.assertEquals("Difference amount of elements than expected: ", nameMap.size(), responseJSON.size());
 
         for(Map.Entry<String, String> entry : nameMap.entrySet()) {
             String actualKey = (String) responseJSON.get(entry.getKey());
             if(actualKey == null){
-                Assert.fail("Expected element " + entry.getKey() + " not found.");
+                Assert.fail("Expected element \"" + entry.getKey() + "\" not found.");
             }
         }
 
         for(Object key : responseJSON.keySet()) {
             if(!nameMap.containsKey(key)) {
-                Assert.fail("Unexpected element " + key + " found in response.");
+                Assert.fail("Unexpected element \"" + key + "\" found in response.");
             }
         }
     }
@@ -367,6 +366,18 @@ public class RESTUtils {
             Assert.fail("Problem parsing JSON from file " + jSONFile);
         }
         return jSONObjectFromFile;
+    }
+
+    public String getId(String response) {
+        JSONParser parser = this.parser;
+        JSONObject responseJSON = new JSONObject();
+        try {
+            responseJSON = (JSONObject) parser.parse(response);
+        } catch (Exception e) {
+            Assert.fail("Problem parsing response into a JSONObject: " + response);
+        }
+
+        return (String) responseJSON.get("id");
     }
 
 }

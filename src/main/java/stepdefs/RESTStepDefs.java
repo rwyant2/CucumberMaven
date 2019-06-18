@@ -1,11 +1,14 @@
 package stepdefs;
 
 //import cucumber.api.DataTable;
+import cucumber.api.java.en.But;
 import cucumber.api.java.en.Then;
 import io.cucumber.datatable.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
 import utils.RESTUtils;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +17,7 @@ public class RESTStepDefs {
 
     private RESTUtils RESTUtils = new RESTUtils();
     private String response = null;
+    private static String savedId = null;
 
     // The below two support simple name-value pairs. This doesn't support arrays and nested entities... yet.
     @When("^send a \"([^\"]*)\" request to endpoint-resource \"([^\"]*)\" with the below values$")
@@ -32,6 +36,7 @@ public class RESTStepDefs {
     @When("^send a \"([^\"]*)\" request to endpoint-resource \"([^\"]*)\" with the JSON \"([^\"]*)\"$")
     public void send_a_request_to_endpoint_resource_with_the_JSON(String reqMethod, String endpoint, String jSONFile) {
         response = RESTUtils.sendRequest(reqMethod, endpoint, jSONFile);
+
     }
 
     @When("send the request \"([^\"]*)\" in SoapUI project \"([^\"]*)\"")
@@ -54,4 +59,18 @@ public class RESTStepDefs {
     public void the_response_matches_the_json_in (String filename) {
         RESTUtils.validateResponseJSON(response, filename);
     }
+
+    @Then("^save the id in the response$")
+    public void print_out_id_for_employee () {
+        savedId = RESTUtils.getId(response);
+        System.out.println("savedId = " + savedId);
+    }
+
+    @When("^send a \"([^\"]*)\" request to endpoint-resource \"([^\"]*)\" with the previously saved id$")
+    public void send_a_request_to_endpoint_resource_with_the_previously_saved_id(String reqType, String endpoint) {
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("id",savedId);
+        response = RESTUtils.sendRequest(reqType, endpoint, map);
+    }
+
 }
