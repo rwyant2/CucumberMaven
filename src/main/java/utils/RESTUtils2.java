@@ -88,10 +88,13 @@ public class RESTUtils2 {
    public String sendRequest(String method, String url, List<Map<String, String>> map) {
        String responseString = null;
        URI uri = buildURI(map, url);
-       JSONObject body = buildJSON(map,"");
        switch(method.toLowerCase()) {
            case "post":
+               JSONObject body = buildJSON(map,"");
                responseString = sendPost(uri, body);
+               break;
+           case "get":
+               responseString = sendGet(uri);
                break;
        }
        return responseString;
@@ -178,7 +181,7 @@ public class RESTUtils2 {
 
        for(Map<String,String> map:listMap) {
            if(map.get("type").equals("segment")) {
-               url = url.replace("{" + map.get("name") + "}",map.get("value"));
+               url = url.replace("{" + map.get("key") + "}",map.get("value"));
            }
        }
 
@@ -268,6 +271,19 @@ public class RESTUtils2 {
        return responseString;
    }
 
+    private String sendGet(URI uri) {
+        String responseString = null;
+        HttpGet httpGet = new HttpGet(uri);
+        httpGet.setConfig(buildConfig());
+
+        try {
+            responseString = convertResponseToString(buildClient().execute(httpGet), uri);
+        } catch (IOException e) {
+            Assert.fail("Problem sending POST request to " + uri);
+        }
+        return responseString;
+    }
+
    private String convertResponseToString(HttpResponse response, URI uri) {
         String responseString = null;
 
@@ -321,5 +337,45 @@ public class RESTUtils2 {
                 Assert.assertTrue("Expected " + entry.getKey() + " = " + entry.getValue() + " but got " + actualValue, entry.getValue().equals(actualValue));
             }
         }
+    }
+
+   public void validateResponseNoValues(String response, Map<String, String> nameMap) {
+        JSONParser parser = this.parser;
+//todo: logic to handle either a JSONObject or JSONArray
+        JSONObject responseJSON = null;
+        try {
+            JSONArray responseJSONArray = (JSONArray) parser.parse(response);
+// in this particular situation, I only care about getting one result
+            responseJSON = (JSONObject) responseJSONArray.get(1);
+        } catch (Exception e) {
+            Assert.fail("Problem parsing response into a JSONObject: " + response);
+        }
+
+        Assert.assertEquals("Difference amount of elements than expected: ", nameMap.size(), responseJSON.size());
+
+        for(Map.Entry<String, String> entry : nameMap.entrySet()) {
+            String actualKey = (String) responseJSON.get(entry.getKey());
+            if(actualKey == null){
+                Assert.fail("Expected element \"" + entry.getKey() + "\" not found.");
+            }
+        }
+
+        for(Object key : responseJSON.keySet()) {
+            if(!nameMap.containsKey(key)) {
+                Assert.fail("Unexpected element \"" + key + "\" found in response.");
+            }
+        }
+    }
+
+    public String getResponseValue(String name, String response) {
+        JSONParser parser = this.parser;
+        JSONObject responseJSON = new JSONObject();
+        try {
+            responseJSON = (JSONObject) parser.parse(response);
+        } catch (Exception e) {
+            Assert.fail("Problem parsing response into a JSONObject: " + response);
+        }
+
+        return (String) responseJSON.get(name);
     }
 }

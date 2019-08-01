@@ -4,7 +4,7 @@ Feature: Create a new employee using POST in a REST web service
 
 # The three types are:
 # query, used in URI queries: www.whatever.com?key=value&key2=value2
-# param, used in URI param: www.whatever.com/{key} becomes www.whatever.com/value
+# segment, used in URI param: www.whatever.com/{key} becomes www.whatever.com/value
 # body, used in the body of a message: {"key":"value","key2":"value2"}
 Scenario: POST request with values defined in this feature file
   When a "post" request is sent to "http://dummy.restapiexample.com/api/v1/create" with the below data
@@ -62,8 +62,6 @@ Scenario: POST request defined in a SoapUI file with values overwritten in a "bo
     |salary|9002    |
     |age   |52      |
     |id    |*       |
-
-
 
 #edge case fun tiems
 #Scenario: "body" entry overwrites "body" entry

@@ -142,6 +142,20 @@ public class RESTStepDefs2 {
         restUtils2.validateResponse(response, mapOut);
     }
 
+    @Then("^the response comes back with the below keys$")
+    public void the_response_comes_back_with_the_below_keys(DataTable nameTable) {
+        Map<String, String> nameMap = nameTable.asMap(String.class, String.class);
+        restUtils2.validateResponseNoValues(response, nameMap);
+    }
+
+    @Then("^save the value of \"([^\"]*)\" from the response$")
+    public void save_value_of_in_the_response (String name) {
+        //todo: handle replacing existing value
+        savedValues.put(name,restUtils2.getResponseValue(name, response));
+        System.out.println("saved value: " + name + " = " + savedValues.get(name));
+    }
+
+
 //    @When("^the request \"([^\"]*)\" in SoapUI project \"([^\"]*)\" is sent$")
 //    public void send_the_request_in_SoapUI_project(String reqName, String soapUiProjectFile) {
 //        response = RESTUtils.sendSoapUIRequest(reqName, soapUiProjectFile, savedValues);
@@ -172,12 +186,7 @@ public class RESTStepDefs2 {
 //        RESTUtils.validateResponseJSON(response, filename, savedValues);
 //    }
 //
-//    @Then("^save the value of \"([^\"]*)\" from the response$")
-//    public void save_value_of_in_the_response (String name) {
-//        //todo: handle replacing existing value
-//        savedValues.put(name,RESTUtils.getResponseValue(name, response));
-//        System.out.println("saved value: " + name + " = " + savedValues.get(name));
-//    }
+
 ////
 ////    @When("^send a \"([^\"]*)\" request to endpoint-resource \"([^\"]*)\" with the previously saved id$")
 ////    public void send_a_request_to_endpoint_resource_with_the_previously_saved_id(String reqType, String endpoint) {
