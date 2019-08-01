@@ -59,7 +59,7 @@ public class RESTUtils {
     public String sendRequest(String method, String endpoint, List<Map<String, String>> listMap) {
         String responseString = null;
         URI uri = buildURI(listMap, endpoint);
-        JSONObject body = buildJSON2(listMap, "");
+        JSONObject body = buildJSON(listMap, "");
         switch(method.toLowerCase()) {
             case "get":
                 responseString = sendGet(uri);
@@ -95,7 +95,7 @@ public class RESTUtils {
         return uri;
     }
 
-    private JSONObject buildJSON2(List<Map<String, String>> listMap, String jsonString) {
+    private JSONObject buildJSON(List<Map<String, String>> listMap, String jsonString) {
         JSONObject jsonObjFromMap = new JSONObject();
         JSONObject jsonObjFromString = new JSONObject();
         JSONObject jsonObjReturned = new JSONObject();
@@ -116,7 +116,7 @@ public class RESTUtils {
             }
         }
 
-        // todo: test if same kay in both map and string
+        // todo: test if same key in both map and string
         try {
             for (Object key : jsonObjFromMap.keySet()) {
                 jsonObjReturned.put(key, jsonObjFromMap.get(key));
@@ -190,30 +190,29 @@ public class RESTUtils {
         return responseString;
     }
 
-    public String sendRequest(String reqMethod, String endpoint, String jSONFile) {
-        String response = null;
-        JSONObject json = parseJSONFile(jSONFile);
-        switch(reqMethod.toLowerCase()) {
-            case "post": response = sendPostJSON(endpoint, json); break;
-            case "put": response = sendPutJSON(endpoint, json); break;
-//            case "get": sendGet; break;
-//            case "delete": sendDelete; break;
-            default:
-                if (reqMethod.isEmpty()) {
-                    Assert.fail("There's no request method. You are silly.");
-                } else {
-                    Assert.fail(reqMethod + " is not currently unsupported as a request method");
-                }
-        }
+//    public String sendRequest(String reqMethod, String endpoint, String jSONFile) {
+//        String response = null;
+//        JSONObject json = parseJSONFile(jSONFile);
+//        switch(reqMethod.toLowerCase()) {
+//            case "post": response = sendPostJSON(endpoint, json); break;
+//            case "put": response = sendPutJSON(endpoint, json); break;
+////            case "get": sendGet; break;
+////            case "delete": sendDelete; break;
+//            default:
+//                if (reqMethod.isEmpty()) {
+//                    Assert.fail("There's no request method. You are silly.");
+//                } else {
+//                    Assert.fail(reqMethod + " is not currently unsupported as a request method");
+//                }
+//        }
+//
+//        return response;
+//    }
 
-        return response;
-    }
-
-    public String sendRequest(String reqName, String soapUiProjectFile) {
+    public String sendSoapUIRequest(String reqName, String soapUiProjectFile, Map<String, String> savedValues) {
         String response = null;
         File file = null;
         Document doc = null;
-        //String endpoint = null;
         String method = null;
         JSONObject json = null;
         XPath xPath =  XPathFactory.newInstance().newXPath();
@@ -354,7 +353,7 @@ public class RESTUtils {
         }
     }
 
-    public void validateResponseJSON(String response, String jSONFilename) {
+    public void validateResponseJSON(String response, String jSONFilename, Map<String, String> savedValues) {
         //todo: make this robust enough to handle JSONArrays and nested JSONs
         //todo maybe make parsing it's own method?
         JSONParser parser = this.parser;
@@ -365,7 +364,7 @@ public class RESTUtils {
             Assert.fail("Problem parsing response into a JSONObject: " + response);
         }
 
-        JSONObject expectedJSON = parseJSONFile(jSONFilename);
+        JSONObject expectedJSON = parseJSONFile(jSONFilename, savedValues);
 
         Assert.assertEquals("Expected message body different than response.", expectedJSON, responseJSON);
 
@@ -548,13 +547,23 @@ public class RESTUtils {
 		return entity;
     }
 
-    private JSONObject parseJSONFile(String jSONFile) {
+    private JSONObject parseJSONFile(String jSONFile, Map<String, String> savedValues) {
         JSONObject jSONObjectFromFile = null;
+
         try {
             jSONObjectFromFile = (JSONObject) parser.parse(new FileReader(jsonFilePath + jSONFile));
         } catch (Exception e) {
             Assert.fail("Problem parsing JSON from file " + jSONFile);
         }
+
+        for(Object o : jSONObjectFromFile.entrySet()) {
+            String jSONEntry = o.toString();
+            if(jSONEntry.contains("((")) {
+                String param = jSONEntry.substring(jSONEntry.indexOf("((") + 2,jSONEntry.indexOf("))"));
+                jSONObjectFromFile.put(param,savedValues.get(param));
+            }
+        }
+
         return jSONObjectFromFile;
     }
 

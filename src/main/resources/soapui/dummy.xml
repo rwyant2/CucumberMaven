@@ -193,20 +193,16 @@
 				</representation>
 				<request name="Update" id="0ed3c44b-98b3-4320-b8ad-0ddad89e220f" mediaType="application/json" postQueryString="false">
 					<settings>
-						<setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
-							<xml-fragment/>
-						</setting>
+						<setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></setting>
 					</settings>
 					<endpoint>http://dummy.restapiexample.com</endpoint>
-					<request>{"name":"Galvatron","salary":"9001","age":"53"}</request>
+					<request>{"name":"Scourge","salary":"8001","age":"43"}</request>
 					<originalUri>http://dummy.restapiexample.com/api/v1/update/21/24882</originalUri>
 					<credentials>
 						<authType>No Authorization</authType>
 					</credentials>
 					<jmsConfig JMSDeliveryMode="PERSISTENT"/>
-					<parameters>
-						<entry key="id" value="24882"/>
-					</parameters>
+					<jmsPropertyConfig/><parameters><entry key="id" value="62876"/></parameters>
 					<parameterOrder>
 						<entry>id</entry>
 					</parameterOrder>

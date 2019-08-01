@@ -93,7 +93,7 @@ public class RESTUtils_backup {
         String response = null;
         File file = null;
         Document doc = null;
-        //String endpoint = null;
+        String endpoint = null;
         String method = null;
         JSONObject json = null;
         XPath xPath =  XPathFactory.newInstance().newXPath();
