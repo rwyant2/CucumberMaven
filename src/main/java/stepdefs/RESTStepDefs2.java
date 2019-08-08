@@ -11,7 +11,7 @@ public class RESTStepDefs2 {
 
     private RESTUtils2 restUtils2 = new RESTUtils2();
     private String response = null;
-    private Map<String, String> savedValues = new HashMap<String, String>();
+    private static Map<String, String> savedValues = new HashMap<String, String>();
 
     @When("^a \"([^\"]*)\" request is sent to \"([^\"]*)\" with the below data$")
     public void a_request_is_sent_to_with_the_below_data(String method, String url, DataTable dt) {
@@ -155,6 +155,24 @@ public class RESTStepDefs2 {
         System.out.println("saved value: " + name + " = " + savedValues.get(name));
     }
 
+    @Then("^the response matches the JSON in \"([^\"]*)\" and any below data$")
+    public void the_response_matches_the_json_in_and_any_below_values(String jsonFileName, DataTable dt) {
+        Map<String, String> mapIn = dt.asMap(String.class, String.class);
+        Map<String, String> mapOut = new HashMap<String, String>();
+
+        // trying to update mapIn directly gets UnsupportedOperationException
+        for(Map.Entry<String, String> entry: mapIn.entrySet()) {
+            if (entry.getValue().startsWith("((") && entry.getValue().endsWith("))")) {
+                String savedValueKey = entry.getValue().substring(2, entry.getValue().length() - 2);
+                System.out.println(savedValues.get(savedValueKey));
+                mapOut.put(entry.getKey(), savedValues.get(savedValueKey));
+            } else {
+                mapOut.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        restUtils2.validateJSONResponse(response, jsonFileName, mapOut);
+    }
 
 //    @When("^the request \"([^\"]*)\" in SoapUI project \"([^\"]*)\" is sent$")
 //    public void send_the_request_in_SoapUI_project(String reqName, String soapUiProjectFile) {

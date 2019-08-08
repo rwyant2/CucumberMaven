@@ -367,7 +367,41 @@ public class RESTUtils2 {
         }
     }
 
-    public String getResponseValue(String name, String response) {
+   public void validateJSONResponse(String response, String jSONFilename, Map<String, String> nameValueMap) {
+        //todo: make this robust enough to handle JSONArrays and nested JSONs
+        //todo maybe make parsing it's own method?
+        JSONParser parser = this.parser;
+        JSONObject responseJSON = new JSONObject();
+        JSONObject fileJSON = new JSONObject();
+
+        try {
+            responseJSON = (JSONObject) parser.parse(response);
+        } catch (Exception e) {
+            Assert.fail("Problem parsing response into a JSONObject: " + response);
+        }
+
+        try {
+           fileJSON = (JSONObject) parser.parse(new String (Files.readAllBytes(Paths.get(jsonFilePath + jSONFilename))));
+        } catch (Exception e) {
+           Assert.fail("Problem parsing response into a JSONObject: " + response);
+        }
+
+        for(Map.Entry<String, String> entry: nameValueMap.entrySet()) {
+            fileJSON.put(entry.getKey(),entry.getValue());
+        }
+
+        Assert.assertEquals("number of JSON entries not same",fileJSON.size(), responseJSON.size());
+
+        for (Object key: fileJSON.keySet()) {
+            if(responseJSON.containsKey(key)) {
+                Assert.assertEquals("Value is different for key " + key,responseJSON.get(key),fileJSON.get(key));
+            } else {
+                Assert.fail("Unexpected key:" + key);
+            }
+        }
+    }
+
+   public String getResponseValue(String name, String response) {
         JSONParser parser = this.parser;
         JSONObject responseJSON = new JSONObject();
         try {
@@ -377,5 +411,15 @@ public class RESTUtils2 {
         }
 
         return (String) responseJSON.get(name);
+    }
+
+   private JSONObject parseJSONFile(String jSONFile) {
+        JSONObject jSONObjectFromFile = null;
+        try {
+            jSONObjectFromFile = (JSONObject) parser.parse(new FileReader(jsonFilePath + jSONFile));
+        } catch (Exception e) {
+            Assert.fail("Problem parsing JSON from file " + jSONFile);
+        }
+        return jSONObjectFromFile;
     }
 }
