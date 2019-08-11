@@ -13,6 +13,10 @@ public class RESTStepDefs2 {
     private String response = null;
     private static Map<String, String> savedValues = new HashMap<String, String>();
 
+    static {
+        savedValues.put("null",null);
+    }
+
     @When("^a \"([^\"]*)\" request is sent to \"([^\"]*)\" with the below data$")
     public void a_request_is_sent_to_with_the_below_data(String method, String url, DataTable dt) {
         List<Map<String, String>> mapIn = dt.asMaps(String.class, String.class);
@@ -131,10 +135,10 @@ public class RESTStepDefs2 {
         Map<String, String> nameValueMap = nameValuePairs.asMap(String.class, String.class);
         Map<String, String> mapOut = new HashMap<String, String>();
         for(Map.Entry<String, String> entry : nameValueMap.entrySet()) {
-            if((entry.getValue()).indexOf("((") > -1) {
+            if((entry.getValue()).contains("((")) {
                 String param = entry.getValue();
                 param  = param.substring(param.indexOf("((") + 2,param.indexOf("))"));
-                mapOut.put(param,savedValues.get(param));
+                mapOut.put(entry.getKey(),savedValues.get(param));
             } else {
                 mapOut.put(entry.getKey(),entry.getValue());
             }

@@ -85,40 +85,53 @@ public class RESTUtils2 {
     private static String soapUiFilePath = absPath + "/src/main/resources/soapui/";
     private JSONParser parser = new JSONParser();
 
-   public String sendRequest(String method, String url, List<Map<String, String>> map) {
+    public String sendRequest(String method, String url, List<Map<String, String>> map) {
        String responseString = null;
        URI uri = buildURI(map, url);
+       JSONObject body = null;
        switch(method.toLowerCase()) {
            case "post":
-               JSONObject body = buildJSON(map,"");
+               body = buildJSON(map,"");
                responseString = sendPost(uri, body);
                break;
            case "get":
                responseString = sendGet(uri);
                break;
+           case "put":
+               body = buildJSON(map,"");
+               responseString = sendPut(uri, body);
+               break;
        }
        return responseString;
    }
 
-   public String sendJSONRequest(String method, String url, String jsonFileName, List<Map<String, String>> map) {
+    public String sendJSONRequest(String method, String url, String jsonFileName, List<Map<String, String>> map) {
         String responseString = null;
         URI uri = buildURI(map, url);
         String jsonString = null;
+        JSONObject body = null;
+
         try {
             jsonString = new String (Files.readAllBytes(Paths.get(jsonFilePath + jsonFileName)));
         } catch (Exception e) {
             System.out.println("Problem reading JSON file " + jsonFileName);
         }
-        JSONObject body = buildJSON(map, jsonString);
+
+        body = buildJSON(map, jsonString);
+
         switch(method.toLowerCase()) {
             case "post":
                 responseString = sendPost(uri, body);
                 break;
+            case "put":
+                responseString = sendPut(uri, body);
+                break;
         }
+
         return responseString;
     }
 
-   public String sendSoapUIRequest(String reqName, String soapUIFile, List<Map<String, String>> map) {
+    public String sendSoapUIRequest(String reqName, String soapUIFile, List<Map<String, String>> map) {
         String responseString = null;
         File file = null;
         Document soapUIDoc = null;
@@ -138,13 +151,13 @@ public class RESTUtils2 {
             Assert.fail("Problem reading SoapUI project file " + soapUIFile);
         }
 
-       try {
+        try {
            uri = buildURI(map, (String) xPath.compile("*//request[@name=\"" + reqName + "\"]/originalUri/text()").evaluate(soapUIDoc, XPathConstants.STRING));
        } catch (Exception e) {
            Assert.fail("Problem finding url for request " + reqName + "in " + soapUIFile);
        }
 
-       try {
+        try {
            method = (String) xPath.compile("*//request[@name=\"" + reqName + "\"]//ancestor::method/@method").evaluate(soapUIDoc, XPathConstants.STRING);
        } catch (Exception e) {
            Assert.fail("Problem finding method for request " + reqName + "in " + soapUIFile);
@@ -164,7 +177,7 @@ public class RESTUtils2 {
         return responseString;
    }
 
-   private URI buildURI(List<Map<String, String>> listMap, String url) {
+    private URI buildURI(List<Map<String, String>> listMap, String url) {
        URI uri = null;
        boolean firstOne = true;
 
@@ -194,7 +207,7 @@ public class RESTUtils2 {
        return uri;
    }
 
-   private JSONObject buildJSON(List<Map<String, String>> listMap, String jsonString) {
+    private JSONObject buildJSON(List<Map<String, String>> listMap, String jsonString) {
         JSONObject jsonObjFromMap = new JSONObject();
         JSONObject jsonObjFromString = new JSONObject();
         JSONObject jsonObjReturned = new JSONObject();
@@ -257,7 +270,7 @@ public class RESTUtils2 {
 //    getSoapUIBody
 //            getSoapUIMethod
 
-   private String sendPost(URI uri, JSONObject body) {
+    private String sendPost(URI uri, JSONObject body) {
        String responseString = null;
        HttpPost httpPost = new HttpPost(uri);
        httpPost.setConfig(buildConfig());
@@ -284,7 +297,21 @@ public class RESTUtils2 {
         return responseString;
     }
 
-   private String convertResponseToString(HttpResponse response, URI uri) {
+    private String sendPut(URI uri, JSONObject body) {
+        String responseString = null;
+        HttpPut httpPut = new HttpPut(uri);
+        httpPut.setConfig(buildConfig());
+        httpPut.setEntity(buildEntity(body));
+
+        try {
+            responseString = convertResponseToString(buildClient().execute(httpPut), uri);
+        } catch (IOException e) {
+            Assert.fail("Problem sending PUT request to " + uri);
+        }
+        return responseString;
+    }
+
+    private String convertResponseToString(HttpResponse response, URI uri) {
         String responseString = null;
 
         try {
@@ -331,10 +358,17 @@ public class RESTUtils2 {
         for(Map.Entry<String, String> entry : nameValueMap.entrySet()) {
             String actualValue = (String) responseJSON.get(entry.getKey());
 
-            if (entry.getValue().equals("*")) {
-                Assert.assertFalse("Element " + entry.getKey() + " has no content" + actualValue, actualValue.isEmpty());
+            //need for situations where I am validating if I get null as an expected value
+            if(entry.getValue() == null) {
+                if(actualValue != null) {
+                    Assert.fail("Expected " + entry.getKey() + " = null but got " + actualValue);
+                }
             } else {
-                Assert.assertTrue("Expected " + entry.getKey() + " = " + entry.getValue() + " but got " + actualValue, entry.getValue().equals(actualValue));
+                if (entry.getValue().equals("*")) {
+                    Assert.assertFalse("Element " + entry.getKey() + " has no content" + actualValue, actualValue.isEmpty());
+                } else {
+                    Assert.assertTrue("Expected " + entry.getKey() + " = " + entry.getValue() + " but got " + actualValue, entry.getValue().equals(actualValue));
+                }
             }
         }
     }
@@ -394,9 +428,9 @@ public class RESTUtils2 {
 
         for (Object key: fileJSON.keySet()) {
             if(responseJSON.containsKey(key)) {
-                Assert.assertEquals("Value is different for key " + key,responseJSON.get(key),fileJSON.get(key));
+                Assert.assertEquals("Value is different for key " + key,fileJSON.get(key),responseJSON.get(key));
             } else {
-                Assert.fail("Unexpected key:" + key);
+                Assert.fail("Unexpected key: " + key);
             }
         }
     }

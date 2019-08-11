@@ -52,7 +52,7 @@ Scenario: POST request defined in a JSON file with values overwritten by a "body
     |age   |51     |
     |id    |*      |
 
-Scenario: POST request defined in a SoapUI file with values overwritten in a "body" entry
+Scenario: POST request defined in a SoapUI file with values overwritten by a "body" entry
   When the request "Create" in SoapUI project "dummy.xml" is sent with any below data
     |type|key |value |
     |body|name|Ramjet|
@@ -62,8 +62,3 @@ Scenario: POST request defined in a SoapUI file with values overwritten in a "bo
     |salary|9002    |
     |age   |52      |
     |id    |*       |
-
-#edge case fun tiems
-#Scenario: "body" entry overwrites "body" entry
-
-

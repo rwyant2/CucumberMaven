@@ -2,109 +2,92 @@
 
 Feature: Validate I can send a put request to a REST endpoint
 
-  Scenario: Someone set us up the test data
-    When send a "post" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/create" with the below values
-      |name  |Cyclonus|
-      |salary|9000    |
-      |age   |50      |
-    Then save the id in the response
-    Then the response comes back with the below values
-      |name  |Cyclonus|
-      |salary|9000    |
-      |age   |50      |
-      |id    |*       |
+  Scenario: (1) Someone set us up the test data
+    When a "post" request is sent to "http://dummy.restapiexample.com/api/v1/create" with the below data
+      |type|key   |value   |
+      |body|name  |Thirteen|
+      |body|salary|9000    |
+      |body|age   |40      |
 
-# For the purpose of testing my stepdefs, I'm hard-coding the id for these scenarios.
-  Scenario: PUT request updating values using a feature file
-    When send a "PUT" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/update/" with the below values
-      |id    |62876|
-      |name  |Cyclonus|
-      |salary|9001    |
-      |age   |50      |
+    Then save the value of "id" from the response
+
+  Scenario: (2) Validate PUT request by updating values using the feature file
+    When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
+      |type   |key   |value    |
+      |segment|id    |((id))   |
+      |body   |name  |Thirteen2|
+      |body   |salary|9001     |
+      |body   |age   |50       |
 
     Then the response comes back with the below values
-      |name  |Cyclonus|
-      |salary|9001    |
-      |age   |50      |
+      |name  |Thirteen2|
+      |salary|9001     |
+      |age   |50       |
 
-  Scenario: PUT request updating values using a JSON file
-    When send a "Put" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/update/" with the JSON "update-employee.json"
+# I would expect this to fail with "I can't find the id of banana", but it comes back as fine.
+  Scenario: (3) Validate PUT request using the feature file but with a bad segment
+    When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
+      |type   |key   |value    |
+      |segment|id    |banana   |
+      |body   |name  |Thirteen3|
+      |body   |salary|9002     |
+      |body   |age   |51       |
+
     Then the response comes back with the below values
-      |name  |Cyclonus2|
-      |salary|9007    |
-      |age   |52      |
+      |name  |Thirteen3|
+      |salary|9002     |
+      |age   |51       |
 
-  Scenario: PUT request updating values using a SoupUI project
-    When send the request "Update" in SoapUI project "dummy.xml"
+  Scenario: (4) Validate PUT request using the feature file but with a missing segment
+    When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
+      |type   |key   |value    |
+      |body   |name  |Thirteen3|
+      |body   |salary|9002     |
+      |body   |age   |51       |
+
     Then the response comes back with the below values
-      |name  |Scourge|
-      |salary|8001   |
-      |age   |43     |
-      |id    |*      |
+      |name  |Thirteen3|
+      |salary|9002     |
+      |age   |51       |
 
+# Name is required and missing body elements are updated to null
+  Scenario: (5) Validate PUT request using the feature file but with a missing body element
+    When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
+      |type   |key   |value    |
+      |segment|id    |((id))   |
+      |body   |name  |Thirteen4|
+      |body   |age   |50       |
 
-#  Scenario: PUT request updating all values with the same values
-#    When send a "put" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/update/" with the below values
-#      |id             |59435  |
-#      |employee_name  |Unicron|
-#      |employee_salary|9002   |
-#      |age            |52     |
-#
-#    Then the response comes back with the below values
-#      |name  |Unicron |
-#      |salary|9002    |
-#      |age   |52      |
-#      |id    |*       |
-#
-#
-#  Scenario: PUT request with an invalid id
-#    When send a "put" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/update/" with the below values
-#      |id             |59435  |
-#      |employee_name  |Unicron|
-#      |employee_salary|9002   |
-#      |age            |52     |
-#
-#    Then the response comes back with the below values
-#      |name  |Unicron |
-#      |salary|9002    |
-#      |age   |52      |
-#      |id    |*       |
-#
-#  Scenario: PUT request with a missing id
-#    When send a "put" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/update/" with the below values
-#      |id             |59435  |
-#      |employee_name  |Unicron|
-#      |employee_salary|9002   |
-#      |age            |52     |
-#
-#    Then the response comes back with the below values
-#      |name  |Unicron |
-#      |salary|9002    |
-#      |age   |52      |
-#      |id    |*       |
+# ((null)) wil always be a saved value so it can be ued in situations like this    
+    Then the response comes back with the below values
+      |name  |Thirteen4|
+      |age   |50  |
+      |salary|((null))|
 
-  #  Scenario: PUT request with a missing value
-#    When send a "put" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/update/" with the below values
-#      |id             |59435  |
-#      |employee_name  |Unicron|
-#      |employee_salary|9002   |
-#      |age            |52     |
-#
-#    Then the response comes back with the below values
-#      |name  |Unicron |
-#      |salary|9002    |
-#      |age   |52      |
-#      |id    |*       |
+  Scenario: (6) Validate PUT request using the feature file but with an extra body element
 
-  #  Scenario: PUT request with an unexpected value
-#    When send a "put" request to endpoint-resource "http://dummy.restapiexample.com/api/v1/update/" with the below values
-#      |id             |59435  |
-#      |employee_name  |Unicron|
-#      |employee_salary|9002   |
-#      |age            |52     |
-#
-#    Then the response comes back with the below values
-#      |name  |Unicron |
-#      |salary|9002    |
-#      |age   |52      |
-#      |id    |*       |
+  Scenario: (7) Validate PUT request using the feature file but with no real updates
+    When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
+      |type   |key   |value    |
+      |segment|id    |((id))   |
+      |body   |name  |Thirteen2|
+      |body   |salary|9002     |
+      |body   |age   |50       |
+
+    Then the response comes back with the below values
+      |name  |Thirteen2|
+      |salary|9002     |
+      |age   |50       |
+
+  Scenario: (7) Validate PUT request using a JSON file
+  Scenario: (8) Validate PUT request using a JSON file with a bad segment
+  Scenario: (9) Validate PUT request using a JSON file with a missing segment
+  Scenario: (10) Validate PUT request using a JSON file with a missing body element
+  Scenario: (11) Validate PUT request using a JSON file with an extra body element
+  Scenario: (12) Validate PUT request using a JSON file with no real updates
+  Scenario: (13) Validate PUT request using a SoapUI file
+  Scenario: (14) Validate PUT request using a SoapUI file with a bad segment
+  Scenario: (15) Validate PUT request using a SoapUI file with a missing segment
+  Scenario: (16) Validate PUT request using a SoapUI file with a missing body element
+  Scenario: (17) Validate PUT request using a SoapUI file with an extra body element
+  Scenario: (18) Validate PUT request using a SoapUI file with no real updates

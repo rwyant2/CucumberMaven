@@ -2,8 +2,8 @@
 
 Feature: Validate I can send a get request to a REST endpoint
 
-  Scenario: GET request with no values
-    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employees" with the values listed below
+  Scenario: (1) GET request with no values
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employees" with the below data
       ||
 
     Then the response comes back with the below keys
@@ -13,8 +13,8 @@ Feature: Validate I can send a get request to a REST endpoint
       |employee_age   |
       |profile_image  |
 
-  Scenario: GET request with no values fails when less than expected keys
-    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employees" with the values listed below
+  Scenario: (2) GET request with no values fails when greater than expected keys
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employees" with the below data
       ||
 
     Then the response comes back with the below keys
@@ -23,8 +23,8 @@ Feature: Validate I can send a get request to a REST endpoint
       |employee_age   |
       |profile_image  |
 
-  Scenario: GET request with no values fails when greater then than expected keys
-    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employees" with the values listed below
+  Scenario: (3) GET request with no values fails when less then than expected keys
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employees" with the below data
       ||
 
     Then the response comes back with the below keys
@@ -35,8 +35,8 @@ Feature: Validate I can send a get request to a REST endpoint
       |employee_age   |
       |profile_image  |
 
-  Scenario: GET request when response had unexpected key
-    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employees" with the values listed below
+  Scenario: (4) GET request when response had unexpected key
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employees" with the below data
       ||
 
     Then the response comes back with the below keys
@@ -46,64 +46,95 @@ Feature: Validate I can send a get request to a REST endpoint
       |employee_age   |
       |banana         |
 
- Scenario: Set up test data and validate GET response against dynamic test data
-   When a "post" request is sent to "http://dummy.restapiexample.com/api/v1/create" with the values listed below
-     |type|name  |value|
-     |body|name  |Galvatron1|
-     |body|salary|1000     |
-     |body|age   |40       |
-   Then save the value of "id" from the response
+  Scenario: (5) Set up test data and validate GET response against dynamic test data
+    When a "post" request is sent to "http://dummy.restapiexample.com/api/v1/create" with the below data
+       |type|key   |value    |
+       |body|name  |GalvatronP|
+       |body|salary|1000     |
+       |body|age   |40       |
 
-   Then a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/((id))" with the values listed below
-    ||
-#    |type |name|value | this would be as a query (i.e.: endpoint.com/?id=12345
-#    |param|id  |((id))|
+    Then save the value of "id" from the response
 
-# This checks for anything as an id
-    Then the response comes back with the below values
-      |id             |*|
-      |employee_name  |Galvatron1|
-      |employee_salary|1000     |
-      |employee_age   |40       |
-      |profile_image  ||
+  # "((id))" refers to the value saved from the response in the above step
+  # the "id" under name refers to the {id} in the url below
+    Then a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key |value |
+      |segment|id  |((id))|
 
-# This checks for the saved value of "id"
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |Galvatron1|
+      |employee_name  |GalvatronP|
       |employee_salary|1000     |
       |employee_age   |40       |
       |profile_image  ||
 
-Scenario: GET request with values verified against a JSON file.
-  When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/((id))" with the values listed below
-    ||
+  Scenario: (6) GET request using a JSON file
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key |value |
+      |segment|id  |((id))|
 
-  Then the response matches the JSON in "get-single-employee.json"
+    Then the response matches the JSON in "get-single-employee.json" and any below data
+      |employee_name|GalvatronP|
+      |id  |((id))   |
 
+  Scenario: (7) GET request using a JSON file with less than expected keys
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key |value |
+      |segment|id  |((id))|
 
-Scenario: GET request with invalid value
-  When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/" with the values listed below
-    |type |name|value|
-    |param|id  |banana|
+    Then the response matches the JSON in "get-single-employee.json" and any below data
+      |employee_name|GalvatronP|
+      |id           |((id))   |
+      |food         |banana   |
 
-  Then the response comes back with the below values
-    |id             |banana   |
-    |employee_name  |Galvatron|
-    |employee_salary|1000     |
-    |employee_age   |40       |
-    |profile_image  ||
+  Scenario: (8) GET request using a JSON file with greater than expected keys
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key |value |
+      |segment|id  |((id))|
 
-Scenario: GET request with values defined in a SoapUI xml project file
-  When the request "GET single employee" in SoapUI project "dummy.xml" is sent
-  Then the response comes back with the below values
-    |id             |((id))   |
-    |employee_name  |Galvatron|
-    |employee_salary|1000     |
-    |employee_age   |40       |
-    |profile_image  ||
-#
-#Scenario: Validate GET response against a JSONObject
-#  When send the request "GET single employee" in SoapUI project "dummy.xml"
-#  Then the response matches the JSON in "get-single-employee.json"
+    Then the response matches the JSON in "get-single-employee.json" and any below data
+      |id  |((id))   |
 
+  Scenario: (9) GET request using a JSON file and an invalid value
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key |value |
+      |segment|id  |((id))|
+
+    Then the response matches the JSON in "get-single-employee.json" and any below data
+      |employee_name|GalvatronP|
+      |id  |banana    |
+
+  Scenario: (10) GET request using a JSON file and an invalid key
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key |value |
+      |segment|id  |((id))|
+
+    Then the response matches the JSON in "get-single-employee.json" and any below data
+      |employee_name|GalvatronP|
+      |banana       |((id))    |
+
+  Scenario: (11) GET request using a JSON file and an invalid segment
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key |value |
+      |segment|id  |banana|
+
+    Then the response matches the JSON in "get-single-employee.json" and any below data
+      |employee_name|GalvatronP|
+      |id           |((id))    |
+
+  Scenario: (12) GET request using a JSON file replacing one of the values
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key |value |
+      |segment|id  |((id))|
+
+    Then the response matches the JSON in "get-single-employee.json" and any below data
+      |employee_name  |GalvatronP|
+      |id             |((id))    |
+      |employee_salary|9000      |
+
+#  Scenario: (13) GET request using a SoapUI file with less than expected keys
+#  Scenario: (14) GET request using a SoapUI file with greater than expected keys
+#  Scenario: (15) GET request using a SoapUI file and an invalid value
+#  Scenario: (16) GET request using a SoapUI file and an invalid key
+#  Scenario: (17) GET request using a SoapUI file and an invalid segment
+#  Scenario: (18) GET request using a SoapUI file replacing one of the values  
