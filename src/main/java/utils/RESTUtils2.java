@@ -299,7 +299,7 @@ public class RESTUtils2 {
         try {
             responseString = convertResponseToString(buildClient().execute(httpGet), uri);
         } catch (IOException e) {
-            Assert.fail("Problem sending POST request to " + uri);
+            Assert.fail("Problem sending GET request to " + uri);
         }
         return responseString;
     }
