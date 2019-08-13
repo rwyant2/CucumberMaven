@@ -152,16 +152,18 @@ public class RESTUtils2 {
         }
 
         try {
-           uri = buildURI(map, (String) xPath.compile("*//request[@name=\"" + reqName + "\"]/originalUri/text()").evaluate(soapUIDoc, XPathConstants.STRING));
-       } catch (Exception e) {
+           String endpoint =  (String) xPath.compile("*//request[@name=\"" + reqName + "\"]/endpoint/text()").evaluate(soapUIDoc, XPathConstants.STRING);
+           String path = (String) xPath.compile("*//request[@name=\"" + reqName + "\"]/ancestor::method/ancestor::resource/@path").evaluate(soapUIDoc, XPathConstants.STRING);
+           uri = buildURI(map, endpoint + path);
+        } catch (Exception e) {
            Assert.fail("Problem finding url for request " + reqName + "in " + soapUIFile);
-       }
+        }
 
         try {
            method = (String) xPath.compile("*//request[@name=\"" + reqName + "\"]//ancestor::method/@method").evaluate(soapUIDoc, XPathConstants.STRING);
-       } catch (Exception e) {
+        } catch (Exception e) {
            Assert.fail("Problem finding method for request " + reqName + "in " + soapUIFile);
-       }
+        }
 
         try {
             json = buildJSON(map, (String) xPath.compile("*//request[@name=\"" + reqName + "\"]/request").evaluate(soapUIDoc, XPathConstants.STRING));
@@ -173,6 +175,11 @@ public class RESTUtils2 {
             case "post":
                 responseString = sendPost(uri, json);
                 break;
+            case "get":
+                responseString = sendGet(uri);
+                break;
+            case "put":
+                responseString = sendPut(uri, json);
         }
         return responseString;
    }
