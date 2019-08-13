@@ -252,7 +252,7 @@ public class RESTUtils2 {
            for (Object key : jsonObjFromMap.keySet()) {
                if(jsonObjReturned.containsKey(key)) {
                    System.out.println("replacing key \"" + key + "\", value " + jsonObjReturned.get(key) +
-                           " with value \"" + jsonObjFromMap.get("key") + "\"");
+                           " with value \"" + jsonObjFromMap.get(key) + "\"");
                }
                jsonObjReturned.put(key, jsonObjFromMap.get(key));
            }
