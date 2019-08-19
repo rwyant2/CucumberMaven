@@ -1,19 +1,17 @@
-package stepdefs;
+package backup_stepdefs;
 
 //import cucumber.api.DataTable;
-import cucumber.api.java.en.But;
+
 import cucumber.api.java.en.Then;
-import io.cucumber.datatable.DataTable;
-import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 import utils.RESTUtils;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
-public class RESTStepDefs {
+public class RESTStepDefs_backup {
 
     private RESTUtils RESTUtils = new RESTUtils();
     private String response = null;

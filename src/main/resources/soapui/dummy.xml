@@ -142,7 +142,7 @@
                         <setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></setting>
                     </settings>
 					<endpoint>http://dummy.restapiexample.com</endpoint>
-					<request>{"name":"Thundercracker","salary":"9002","age":"52"}</request>
+					<request>{"name":"ThundercrackerA","salary":"9002","age":"52"}</request>
 					<originalUri>http://dummy.restapiexample.com/api/v1/create</originalUri>
 					<credentials>
 						<authType>No Authorization</authType>
@@ -153,7 +153,7 @@
 				</request>
 			</method>
 		</resource>
-		<resource name="Id" path="/api/v1/update/{id}" id="9429fda6-c6fc-4fe1-9036-9ab3912be831">
+		<resource name="Update" path="/api/v1/update/{id}" id="9429fda6-c6fc-4fe1-9036-9ab3912be831">
 			<settings/>
 			<parameters>
 				<parameter>
@@ -191,27 +191,53 @@
 					<params/>
 					<element>html</element>
 				</representation>
-				<request name="Update" id="0ed3c44b-98b3-4320-b8ad-0ddad89e220f" mediaType="application/json" postQueryString="false">
+				<representation type="RESPONSE"><mediaType xsi:nil="true"/><status>0</status><params/><con:element xmlns="" xmlns:con="http://eviware.com/soapui/config">data</con:element></representation><request name="Update" id="0ed3c44b-98b3-4320-b8ad-0ddad89e220f" mediaType="application/json" postQueryString="false">
 					<settings>
-						<setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
-							<xml-fragment/>
-						</setting>
+						<setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></setting>
 					</settings>
 					<endpoint>http://dummy.restapiexample.com</endpoint>
-					<request>{"name":"Galvatron","salary":"9001","age":"53"}</request>
+					<request>{"name":"FiftyFive14","salary":"8001","age":"43"}</request>
 					<originalUri>http://dummy.restapiexample.com/api/v1/update/21/24882</originalUri>
 					<credentials>
 						<authType>No Authorization</authType>
 					</credentials>
 					<jmsConfig JMSDeliveryMode="PERSISTENT"/>
-					<parameters>
-						<entry key="id" value="24882"/>
-					</parameters>
+					<jmsPropertyConfig/><parameters><entry key="id" value="60683"/></parameters>
 					<parameterOrder>
 						<entry>id</entry>
 					</parameterOrder>
 				</request>
-			</method>
+			<request name="Update No Salary" id="0ed3c44b-98b3-4320-b8ad-0ddad89e220f" mediaType="application/json" postQueryString="false">
+					<settings>
+						<setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></setting>
+					</settings>
+					<endpoint>http://dummy.restapiexample.com</endpoint>
+					<request>{"name":"FiftyFive17","age":"45"}</request>
+					<originalUri>http://dummy.restapiexample.com/api/v1/update/21/24882</originalUri>
+					<credentials>
+						<authType>No Authorization</authType>
+					</credentials>
+					<jmsConfig JMSDeliveryMode="PERSISTENT"/>
+					<jmsPropertyConfig/><parameters><entry key="id" value="62876"/></parameters>
+					<parameterOrder>
+						<entry>id</entry>
+					</parameterOrder>
+				</request><request name="Update Extra Element" id="0ed3c44b-98b3-4320-b8ad-0ddad89e220f" mediaType="application/json" postQueryString="false">
+					<settings>
+						<setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></setting>
+					</settings>
+					<endpoint>http://dummy.restapiexample.com</endpoint>
+					<request>{"name":"FiftyFive18","salary":"8006","hungry":"banana","age":"47"}</request>
+					<originalUri>http://dummy.restapiexample.com/api/v1/update/21/24882</originalUri>
+					<credentials>
+						<authType>No Authorization</authType>
+					</credentials>
+					<jmsConfig JMSDeliveryMode="PERSISTENT"/>
+					<jmsPropertyConfig/><parameters><entry key="id" value="62876"/></parameters>
+					<parameterOrder>
+						<entry>id</entry>
+					</parameterOrder>
+				</request></method>
 		</resource>
 		<resource name="Delete" path="/api/v1/delete/{id}" id="3b9fc40f-35af-4ec2-9441-5d9a06dd88a6">
 			<settings/>
