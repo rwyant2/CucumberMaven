@@ -142,7 +142,7 @@
                         <setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></setting>
                     </settings>
 					<endpoint>http://dummy.restapiexample.com</endpoint>
-					<request>{"name":"ThundercrackerA","salary":"9002","age":"52"}</request>
+					<request>{"name":"Thundercracker","salary":"9002","age":"52"}</request>
 					<originalUri>http://dummy.restapiexample.com/api/v1/create</originalUri>
 					<credentials>
 						<authType>No Authorization</authType>
@@ -196,7 +196,7 @@
 						<setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></setting>
 					</settings>
 					<endpoint>http://dummy.restapiexample.com</endpoint>
-					<request>{"name":"FiftyFive14","salary":"8001","age":"43"}</request>
+					<request>{"name":"Shockwave14","salary":"8001","age":"43"}</request>
 					<originalUri>http://dummy.restapiexample.com/api/v1/update/21/24882</originalUri>
 					<credentials>
 						<authType>No Authorization</authType>
@@ -212,7 +212,7 @@
 						<setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></setting>
 					</settings>
 					<endpoint>http://dummy.restapiexample.com</endpoint>
-					<request>{"name":"FiftyFive17","age":"45"}</request>
+					<request>{"name":"Shockwave17","age":"45"}</request>
 					<originalUri>http://dummy.restapiexample.com/api/v1/update/21/24882</originalUri>
 					<credentials>
 						<authType>No Authorization</authType>
@@ -227,7 +227,7 @@
 						<setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></setting>
 					</settings>
 					<endpoint>http://dummy.restapiexample.com</endpoint>
-					<request>{"name":"FiftyFive18","salary":"8006","hungry":"banana","age":"47"}</request>
+					<request>{"name":"Shockwave18","salary":"8006","hungry":"banana","age":"47"}</request>
 					<originalUri>http://dummy.restapiexample.com/api/v1/update/21/24882</originalUri>
 					<credentials>
 						<authType>No Authorization</authType>
@@ -270,8 +270,7 @@
                 </representation>
                 <request name="Delete" id="8a575237-e1da-486b-9e2a-2af4a0f3be0f" mediaType="application/json" postQueryString="false">
                     <settings>
-                        <setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/>
-                        </setting>
+                        <setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></setting>
                     </settings>
                     <endpoint>http://dummy.restapiexample.com</endpoint>
                     <request/>
@@ -281,9 +280,7 @@
                     </credentials>
                     <jmsConfig JMSDeliveryMode="PERSISTENT"/>
                     <jmsPropertyConfig/>
-                    <parameters>
-                        <entry key="id" value="26993"/>
-                    </parameters>
+                    <parameters><entry key="id" value="61344"/></parameters>
                     <parameterOrder>
                         <entry>id</entry>
                     </parameterOrder>

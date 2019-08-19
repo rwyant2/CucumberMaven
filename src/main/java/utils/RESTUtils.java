@@ -3,6 +3,38 @@ package utils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.*;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.junit.Assert;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -11,19 +43,27 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.junit.Assert;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 //attempt with dom4j
@@ -32,74 +72,168 @@ import java.util.Map;
 //import org.dom4j.Element;
 //import org.dom4j.Node;
 //import org.dom4j.io.SAXReader;
-
 //attempt with jdom2
 //import org.jdom2.input.SAXBuilder;
-
 //attempt with XPath
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
 
 public class RESTUtils {
 
-    private String endpoint;
     private static String absPath = new File("").getAbsolutePath();
     private static String jsonFilePath = absPath + "/src/main/resources/json/";
     private static String soapUiFilePath = absPath + "/src/main/resources/soapui/";
     private JSONParser parser = new JSONParser();
 
-    public String sendRequest(String method, String endpoint, List<Map<String, String>> listMap) {
+    public String sendRequest(String method, String url, List<Map<String, String>> map) {
+       String responseString = null;
+       URI uri = buildURI(map, url);
+       JSONObject body = null;
+       switch(method.toLowerCase()) {
+           case "post":
+               body = buildJSON(map,"");
+               responseString = sendPost(uri, body);
+               break;
+           case "get":
+               responseString = sendGet(uri);
+               break;
+           case "put":
+               body = buildJSON(map,"");
+               responseString = sendPut(uri, body);
+               break;
+           case "delete":
+               responseString = sendDelete(uri);
+               break;
+           default:
+               Assert.fail("Method " + method + " is currently not supported");
+               break;
+       }
+       return responseString;
+   }
+
+    public String sendJSONRequest(String method, String url, String jsonFileName, List<Map<String, String>> map) {
         String responseString = null;
-        URI uri = buildURI(listMap, endpoint);
-        JSONObject body = buildJSON(listMap, "");
+        URI uri = buildURI(map, url);
+        String jsonString = null;
+        JSONObject body = null;
+
+        try {
+            jsonString = new String (Files.readAllBytes(Paths.get(jsonFilePath + jsonFileName)));
+        } catch (Exception e) {
+            System.out.println("Problem reading JSON file " + jsonFileName);
+        }
+
+        body = buildJSON(map, jsonString);
+
         switch(method.toLowerCase()) {
-            case "get":
-                responseString = sendGet(uri);
-                break;
             case "post":
                 responseString = sendPost(uri, body);
+                break;
+            case "put":
+                responseString = sendPut(uri, body);
+                break;
+            default:
+                Assert.fail("Method " + method + " currently not supported for JSON requests");
+                break;
         }
+
         return responseString;
     }
 
-    private URI buildURI(List<Map<String, String>> listMap, String endpoint) {
+    public String sendSoapUIRequest(String reqName, String soapUIFile, List<Map<String, String>> map) {
+        String responseString = null;
+        File file = null;
+        Document soapUIDoc = null;
+        String method = null;
         URI uri = null;
-        String url = endpoint;
-        boolean firstOne = true;
+        JSONObject json = null;
+        XPath xPath =  XPathFactory.newInstance().newXPath();
 
-        for(Map<String,String> map:listMap) {
-            if(map.get("type").equals("param")) {
-                if(firstOne) {
-                    url = url + "?" + map.get("name") + "=" + map.get("value");
-                    firstOne = false;
-                } else {
-                    url = url + "&" + map.get("name") + "=" + map.get("value");
-                }
-            }
+        try {
+            String xmlFunTiems = new String (Files.readAllBytes(Paths.get(soapUiFilePath + soapUIFile)));
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            InputSource is = new InputSource(new StringReader(xmlFunTiems));
+            soapUIDoc = dBuilder.parse(is);
+            soapUIDoc.getDocumentElement().normalize();
+        } catch (Exception e) {
+            Assert.fail("Problem reading SoapUI project file " + soapUIFile);
         }
 
         try {
-            uri = new URI(url.replace(" ","%20"));
-        } catch (URISyntaxException e) {
-            Assert.fail("Invalid endpoint: " + url);
+           String endpoint =  (String) xPath.compile("*//request[@name=\"" + reqName + "\"]/endpoint/text()").evaluate(soapUIDoc, XPathConstants.STRING);
+           String path = (String) xPath.compile("*//request[@name=\"" + reqName + "\"]/ancestor::method/ancestor::resource/@path").evaluate(soapUIDoc, XPathConstants.STRING);
+           uri = buildURI(map, endpoint + path);
+        } catch (Exception e) {
+           Assert.fail("Problem finding url for request " + reqName + "in " + soapUIFile);
         }
 
-        return uri;
-    }
+        try {
+           method = (String) xPath.compile("*//request[@name=\"" + reqName + "\"]//ancestor::method/@method").evaluate(soapUIDoc, XPathConstants.STRING);
+        } catch (Exception e) {
+           Assert.fail("Problem finding method for request " + reqName + "in " + soapUIFile);
+        }
+
+        try {
+            json = buildJSON(map, (String) xPath.compile("*//request[@name=\"" + reqName + "\"]/request").evaluate(soapUIDoc, XPathConstants.STRING));
+        } catch (Exception e) {
+            System.out.println("Error when parsing JSON body from request " + reqName + " in SoapUI project " + soapUIFile);
+        }
+
+        switch(method.toLowerCase()) {
+            case "post":
+                responseString = sendPost(uri, json);
+                break;
+            case "get":
+                responseString = sendGet(uri);
+                break;
+            case "put":
+                responseString = sendPut(uri, json);
+                break;
+            case "delete":
+                responseString = sendDelete(uri);
+                break;
+            default:
+                Assert.fail("Method " + method + " currently not supported for SoapUI requests");
+                break;
+        }
+        return responseString;
+   }
+
+    private URI buildURI(List<Map<String, String>> listMap, String url) {
+       URI uri = null;
+       boolean firstOne = true;
+
+       for(Map<String,String> map:listMap) {
+           if(map.get("type").equals("query")) {
+               if(firstOne) {
+                   url = url + "?" + map.get("name") + "=" + map.get("value");
+                   firstOne = false;
+               } else {
+                   url = url + "&" + map.get("name") + "=" + map.get("value");
+               }
+           }
+       }
+
+       for(Map<String,String> map:listMap) {
+           if(map.get("type").equals("segment")) {
+               url = url.replace("{" + map.get("key") + "}",map.get("value"));
+           }
+       }
+
+       try {
+           uri = new URI(url.replace(" ","%20"));
+       } catch (URISyntaxException e) {
+           Assert.fail("Invalid endpoint: " + url);
+       }
+
+       return uri;
+   }
 
     private JSONObject buildJSON(List<Map<String, String>> listMap, String jsonString) {
         JSONObject jsonObjFromMap = new JSONObject();
         JSONObject jsonObjFromString = new JSONObject();
         JSONObject jsonObjReturned = new JSONObject();
 
+        // Meant to handle stuff coming from SoapUI
         if(jsonString.length() > 0) {
             try {
                 jsonObjFromString = (JSONObject) parser.parse(jsonString);
@@ -109,28 +243,53 @@ public class RESTUtils {
         }
 
         if(listMap.size() > 0) {
-            for(Map<String, String> entry: listMap) {
-                if(!(entry.get("type").equals("param"))){
-                    jsonObjFromMap.put(entry.get("name"),entry.get("value"));
-                }
-            }
-        }
+           for(Map<String, String> entry: listMap) {
+               if((entry.get("type").equals("body"))){
+                   if(jsonObjFromMap.containsKey(entry.get("key"))) {
+                       System.out.println("replacing key \"" + entry.get("key") + "\", value " + jsonObjFromMap.get(entry.get("key")) +
+                               " with value \"" + entry.get("value") + "\"");
+                   }
+                   jsonObjFromMap.put(entry.get("key"),entry.get("value"));
+               }
+           }
+       }
 
-        // todo: test if same key in both map and string
-        try {
-            for (Object key : jsonObjFromMap.keySet()) {
-                jsonObjReturned.put(key, jsonObjFromMap.get(key));
-            }
+       try {
+           for (Object key : jsonObjFromString.keySet()) {
+               jsonObjReturned.put(key, jsonObjFromString.get(key));
+           }
+       } catch (Exception e) {
+           Assert.fail("Problem building message body");
+       }
 
-            for (Object key : jsonObjFromString.keySet()) {
-                jsonObjReturned.put(key, jsonObjFromString.get(key));
-            }
-        } catch (Exception e) {
-            Assert.fail("Problem building message body");
-        }
+       try {
+           for (Object key : jsonObjFromMap.keySet()) {
+               if(jsonObjReturned.containsKey(key)) {
+                   System.out.println("replacing key \"" + key + "\", value " + jsonObjReturned.get(key) +
+                           " with value \"" + jsonObjFromMap.get(key) + "\"");
+               }
+               jsonObjReturned.put(key, jsonObjFromMap.get(key));
+           }
+       } catch (Exception e) {
+           Assert.fail("Problem building message body");
+       }
 
-        return jsonObjReturned;
+       return jsonObjReturned;
     }
+
+    private String sendPost(URI uri, JSONObject body) {
+       String responseString = null;
+       HttpPost httpPost = new HttpPost(uri);
+       httpPost.setConfig(buildConfig());
+       httpPost.setEntity(buildEntity(body));
+
+       try {
+           responseString = convertResponseToString(buildClient().execute(httpPost), uri);
+       } catch (IOException e) {
+           Assert.fail("Problem sending POST request to " + uri);
+       }
+       return responseString;
+   }
 
     private String sendGet(URI uri) {
         String responseString = null;
@@ -138,168 +297,70 @@ public class RESTUtils {
         httpGet.setConfig(buildConfig());
 
         try {
-            responseString = convertResponseToString(buildClient().execute(httpGet));
+            responseString = convertResponseToString(buildClient().execute(httpGet), uri);
         } catch (IOException e) {
             Assert.fail("Problem sending GET request to " + uri);
         }
         return responseString;
     }
 
-    private String sendPost(URI uri, JSONObject body) {
+    private String sendPut(URI uri, JSONObject body) {
         String responseString = null;
-        HttpPost httpPost = new HttpPost(uri);
-        httpPost.setConfig(buildConfig());
-        httpPost.setEntity(buildEntity(body));
+        HttpPut httpPut = new HttpPut(uri);
+        httpPut.setConfig(buildConfig());
+        httpPut.setEntity(buildEntity(body));
 
         try {
-            responseString = convertResponseToString(buildClient().execute(httpPost));
+            responseString = convertResponseToString(buildClient().execute(httpPut), uri);
         } catch (IOException e) {
-            Assert.fail("Problem sending POST request to " + endpoint);
+            Assert.fail("Problem sending PUT request to " + uri);
         }
         return responseString;
     }
 
-    public String getResponseValue(String name, String response) {
-        JSONParser parser = this.parser;
-        JSONObject responseJSON = new JSONObject();
-        try {
-            responseJSON = (JSONObject) parser.parse(response);
-        } catch (Exception e) {
-            Assert.fail("Problem parsing response into a JSONObject: " + response);
-        }
-
-        return (String) responseJSON.get(name);
-    }
-// you are here
-    public String sendRequest(String reqMethod, String endpoint, Map<String, String> nameValueMap) {
+    private String sendDelete(URI uri) {
         String responseString = null;
-        this.endpoint = endpoint;
-        switch(reqMethod.toLowerCase()) {
-            case "post": responseString = sendPostMap(endpoint, nameValueMap); break;
-            case "put": responseString = sendPutMap(endpoint, nameValueMap); break;
-            case "get": responseString = sendGetMap(endpoint, nameValueMap); break;
-//            case "delete": sendDelete; break;
-            default:
-                if (reqMethod.isEmpty()) {
-                    Assert.fail("There's no request method. You are silly.");
-                } else {
-                    Assert.fail(reqMethod + " is currently unsupported as a request method");
-                }
+        HttpDelete httpDelete = new HttpDelete(uri);
+        httpDelete.setConfig(buildConfig());
+
+        try {
+            responseString = convertResponseToString(buildClient().execute(httpDelete), uri);
+        } catch (IOException e) {
+            Assert.fail("Problem sending GET request to " + uri);
+        }
+        return responseString;
+    }
+
+    private String convertResponseToString(HttpResponse response, URI uri) {
+        String responseString = null;
+
+        try {
+            int responseStatus = response.getStatusLine().getStatusCode();
+            if (responseStatus != 200) {
+                Assert.fail("Status code " + responseStatus + " when sending request to " + uri);
+            } else {
+                responseString = EntityUtils.toString(response.getEntity());
+            }
+        } catch (IOException e) {
+            Assert.fail("Problem reading response from request to " + uri);
         }
 
         return responseString;
     }
 
-//    public String sendRequest(String reqMethod, String endpoint, String jSONFile) {
-//        String response = null;
-//        JSONObject json = parseJSONFile(jSONFile);
-//        switch(reqMethod.toLowerCase()) {
-//            case "post": response = sendPostJSON(endpoint, json); break;
-//            case "put": response = sendPutJSON(endpoint, json); break;
-////            case "get": sendGet; break;
-////            case "delete": sendDelete; break;
-//            default:
-//                if (reqMethod.isEmpty()) {
-//                    Assert.fail("There's no request method. You are silly.");
-//                } else {
-//                    Assert.fail(reqMethod + " is not currently unsupported as a request method");
-//                }
-//        }
-//
-//        return response;
-//    }
+    private HttpClient buildClient() {
+        return HttpClientBuilder.create().build();
+   }
 
-    public String sendSoapUIRequest(String reqName, String soapUiProjectFile, Map<String, String> savedValues) {
-        String response = null;
-        File file = null;
-        Document doc = null;
-        String method = null;
-        JSONObject json = null;
-        XPath xPath =  XPathFactory.newInstance().newXPath();
+    private RequestConfig buildConfig() {
+        return RequestConfig.custom().setConnectTimeout(10000).build();
+   }
 
-        try {
-            file = new File(soapUiFilePath + soapUiProjectFile);
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder;
-            dBuilder = dbFactory.newDocumentBuilder();
-            doc = dBuilder.parse(file);
-            doc.getDocumentElement().normalize();
-        } catch (Exception e) {
-            Assert.fail("Problem reading SoapUI project file " + soapUiProjectFile);
-        }
-
-        try {
-            this.endpoint = (String) xPath.compile("*//request[@name=\"" + reqName + "\"]/originalUri/text()").evaluate(doc, XPathConstants.STRING);
-        } catch (Exception e) {
-            Assert.fail("Problem finding endpoint for request " + reqName + "in " + soapUiProjectFile);
-        }
-
-        try {
-            method = (String) xPath.compile("*//request[@name=\"" + reqName + "\"]//ancestor::method/@method").evaluate(doc, XPathConstants.STRING);
-        } catch (Exception e) {
-            Assert.fail("Problem finding method for request " + reqName + "in " + soapUiProjectFile);
-        }
-
-        switch(method.toLowerCase()) {
-            case "post":
-                try {
-                    json = (JSONObject) parser.parse((String) xPath.compile("*//request[@name=\"" + reqName + "\"]/request").evaluate(doc, XPathConstants.STRING));
-                } catch (Exception e) {
-                    Assert.fail("Problem finding message body for request " + reqName + "in " + soapUiProjectFile);
-                }
-
-                response = sendPostJSON(endpoint, json);
-                break;
-
-            case "put":
-                try {
-                    json = (JSONObject) parser.parse((String) xPath.compile("*//request[@name=\"" + reqName + "\"]/request").evaluate(doc, XPathConstants.STRING));
-                    // This is another place I'm shoehorning in id to avoid writing new code. I'm lazy.
-                    NodeList params = (NodeList) xPath.evaluate("*//request[@name=\"" + reqName + "\"]/parameters/entry", doc, XPathConstants.NODESET);
-                    for(int i = 0;i < params.getLength();i++) {
-                        endpoint = endpoint + params.item(i).getNodeValue() + "/";
-//                        if(i > 0) endpoint = endpoint + "/";
-                    }
-                } catch (Exception e) {
-                    Assert.fail("Problem finding message body for request " + reqName + "in " + soapUiProjectFile);
-                }
-
-                response = sendPutJSON(endpoint, json);
-                break;
-
-                case "get":
-
-                    try {
-                        response = sendGetSoapUI(endpoint, (NodeList) xPath.evaluate("*//request[@name=\"" + reqName + "\"]/parameters/entry", doc, XPathConstants.NODESET));
-                    } catch (Exception e) {
-                        Assert.fail("Problem finding parameters for request " + reqName + "in " + soapUiProjectFile);
-                    }
-
-                break;
-
-//            case "delete": sendDelete; break;
-
-            default: Assert.fail(method + " is not currently unsupported as a request method");
-        }
-
-        return response;
-    }
-
-    public String sendRequestNoValues(String reqMethod, String endpoint) {
-        String response = null;
-        switch(reqMethod.toLowerCase()) {
-//            case "post": response = sendPost(endpoint); break;
-//            case "put": sendPut; break;
-            case "get": response = sendGet(endpoint); break;
-//            case "delete": sendDelete; break;
-            default:
-                if (reqMethod.isEmpty()) {
-                    Assert.fail("There's no request method. You are silly.");
-                } else {
-                    Assert.fail(reqMethod + " is not currently unsupported as a request method");
-                }
-        }
-        return response;
+    private StringEntity buildEntity(JSONObject object) {
+        StringEntity entity = new StringEntity(object.toString(), "UTF-8");
+        BasicHeader basicHeader = new BasicHeader(HTTP.CONTENT_TYPE,"application/json");
+        entity.setContentType(basicHeader);
+        return entity;
     }
 
     public void validateResponse(String response, Map<String, String> nameValueMap) {
@@ -317,10 +378,17 @@ public class RESTUtils {
         for(Map.Entry<String, String> entry : nameValueMap.entrySet()) {
             String actualValue = (String) responseJSON.get(entry.getKey());
 
-            if (entry.getValue().equals("*")) {
-                Assert.assertFalse("Element " + entry.getKey() + " has no content" + actualValue, actualValue.isEmpty());
+            //need for situations where I am validating if I get null as an expected value
+            if(entry.getValue() == null) {
+                if(actualValue != null) {
+                    Assert.fail("Expected " + entry.getKey() + " = null but got " + actualValue);
+                }
             } else {
-                Assert.assertTrue("Expected " + entry.getKey() + " = " + entry.getValue() + " but got " + actualValue, entry.getValue().equals(actualValue));
+                if (entry.getValue().equals("*")) {
+                    Assert.assertFalse("Element " + entry.getKey() + " has no content" + actualValue, actualValue.isEmpty());
+                } else {
+                    Assert.assertTrue("Expected " + entry.getKey() + " = " + entry.getValue() + " but got " + actualValue, entry.getValue().equals(actualValue));
+                }
             }
         }
     }
@@ -353,9 +421,41 @@ public class RESTUtils {
         }
     }
 
-    public void validateResponseJSON(String response, String jSONFilename, Map<String, String> savedValues) {
+    public void validateJSONResponse(String response, String jSONFilename, Map<String, String> nameValueMap) {
         //todo: make this robust enough to handle JSONArrays and nested JSONs
         //todo maybe make parsing it's own method?
+        JSONParser parser = this.parser;
+        JSONObject responseJSON = new JSONObject();
+        JSONObject fileJSON = new JSONObject();
+
+        try {
+            responseJSON = (JSONObject) parser.parse(response);
+        } catch (Exception e) {
+            Assert.fail("Problem parsing response into a JSONObject: " + response);
+        }
+
+        try {
+           fileJSON = (JSONObject) parser.parse(new String (Files.readAllBytes(Paths.get(jsonFilePath + jSONFilename))));
+        } catch (Exception e) {
+           Assert.fail("Problem parsing response into a JSONObject: " + response);
+        }
+
+        for(Map.Entry<String, String> entry: nameValueMap.entrySet()) {
+            fileJSON.put(entry.getKey(),entry.getValue());
+        }
+
+        Assert.assertEquals("number of JSON entries not same",fileJSON.size(), responseJSON.size());
+
+        for (Object key: fileJSON.keySet()) {
+            if(responseJSON.containsKey(key)) {
+                Assert.assertEquals("Value is different for key " + key,fileJSON.get(key),responseJSON.get(key));
+            } else {
+                Assert.fail("Unexpected key: " + key);
+            }
+        }
+    }
+
+    public String getResponseValue(String name, String response) {
         JSONParser parser = this.parser;
         JSONObject responseJSON = new JSONObject();
         try {
@@ -364,209 +464,16 @@ public class RESTUtils {
             Assert.fail("Problem parsing response into a JSONObject: " + response);
         }
 
-        JSONObject expectedJSON = parseJSONFile(jSONFilename, savedValues);
-
-        Assert.assertEquals("Expected message body different than response.", expectedJSON, responseJSON);
-
+        return (String) responseJSON.get(name);
     }
 
-    private String sendPostMap(String endpoint, Map<String, String> nameValueMap) {
-        String responseString = null;
-        HttpPost httpPost = new HttpPost(validateEndpoint(endpoint));
-        httpPost.setConfig(buildConfig());
-        httpPost.setEntity(buildEntity(buildJSON(nameValueMap)));
-
-        try {
-            responseString = convertResponseToString(buildClient().execute(httpPost));
-        } catch (IOException e) {
-            Assert.fail("Problem sending POST request to " + endpoint);
-        }
-        return responseString;
-    }
-
-    private String sendPostJSON(String endpoint, JSONObject json) {
-        String responseString = null;
-        HttpPost httpPost = new HttpPost(validateEndpoint(endpoint));
-        httpPost.setConfig(buildConfig());
-        httpPost.setEntity(buildEntity(json));
-
-        try {
-            responseString = convertResponseToString(buildClient().execute(httpPost));
-        } catch (IOException e) {
-            Assert.fail("Problem sending POST request to " + endpoint);
-        }
-        return responseString;
-    }
-
-    private String sendGet(String endpoint) {
-        String responseString = null;
-        HttpGet httpGet = new HttpGet(validateEndpoint(endpoint));
-        httpGet.setConfig(buildConfig());
-
-        try {
-            responseString = convertResponseToString(buildClient().execute(httpGet));
-        } catch (IOException e) {
-            Assert.fail("Problem sending GET request to " + endpoint);
-        }
-        return responseString;
-    }
-
-    private String sendGetMap(String endpoint, Map<String, String> nameValueMap) {
-
-//todo: have this support queries and more than one value per key
-//todo: make this more generic and flexible to support both queries and direct links
-        for(Map.Entry<String,String> entry : nameValueMap.entrySet()) {
-            //endpoint = endpoint + "?" + entry.getKey() + "=" + entry.getValue(); //format not used on the dummy
-            endpoint = endpoint + "/" + entry.getValue();
-        }
-
-        return sendGet(endpoint);
-    }
-
-    private String sendGetSoapUI(String endpoint, NodeList reqParams) {
-
-//todo: have this support queries and more than one value per key
-//todo: support for query format ?id-123,name=whatever,etc
-//todo: make this more generic and flexible to support both queries and direct links
-
-//        for(int i=0; i<reqParams.getLength(); i++) {
-        Node n = reqParams.item(0);
-        NamedNodeMap m = n.getAttributes();
-        String s = m.getNamedItem("value").toString();
-        String sub = s.substring(s.indexOf("\"") + 1,s.lastIndexOf("\""));
-        endpoint = endpoint + sub;
-
-        return sendGet(endpoint);
-    }
-
-    private String sendPutMap(String endpoint, Map<String, String> nameValueMap) {
-        String responseString = null;
-        HttpPut httpPut = new HttpPut(validateEndpoint(endpoint) + nameValueMap.get("id"));
-        // The message in this particular API has all the elements except id. That goes in the URL above.
-        // nameValueMap.remove() gives me UnsupportedOperationException ಠ_ಠ
-        // So I'm making a new Map with everything but "id" so I can re-use the buildJSON method.
-        Map<String,String> mapWithoutId = new HashMap<String, String>();
-        for(Map.Entry<String, String> entry: nameValueMap.entrySet()) {
-            if(!(entry.getKey().equals("id"))) {
-                mapWithoutId.put(entry.getKey(),entry.getValue());
-            }
-        }
-
-        httpPut.setConfig(buildConfig());
-        httpPut.setEntity(buildEntity(buildJSON(mapWithoutId)));
-
-        try {
-            responseString = convertResponseToString(buildClient().execute(httpPut));
-        } catch (IOException e) {
-            Assert.fail("Problem sending PUT request to " + endpoint);
-        }
-        return responseString;
-    }
-
-    private String sendPutJSON(String endpoint, JSONObject json) {
-        // Not sure if this is the right way to do this. In order to re-use existing methods
-        // I'm adding "id" to the JSON file even though the actual message won't have that
-        // element in there.
-        String responseString = null;
-        HttpPut httpPut = new HttpPut(validateEndpoint(endpoint) + json.get("id").toString());
-        httpPut.setConfig(buildConfig());
-        json.remove("id");
-        httpPut.setEntity(buildEntity(json));
-
-        try {
-            responseString = convertResponseToString(buildClient().execute(httpPut));
-        } catch (IOException e) {
-            Assert.fail("Problem sending POST request to " + endpoint);
-        }
-        return responseString;
-    }
-
-    private String sendPutSoapUI(String endpoint, NodeList reqParams) {
-
-//todo: have this support queries and more than one value per key
-//todo: support for query format ?id-123,name=whatever,etc
-//todo: make this more generic and flexible to support both queries and direct links
-
-//        for(int i=0; i<reqParams.getLength(); i++) {
-        Node n = reqParams.item(0);
-        NamedNodeMap m = n.getAttributes();
-        String s = m.getNamedItem("value").toString();
-        String sub = s.substring(s.indexOf("\"") + 1,s.lastIndexOf("\""));
-        endpoint = endpoint + sub;
-
-        return sendGet(endpoint);
-    }
-
-    private String convertResponseToString(HttpResponse response) {
-        String responseString = null;
-
-        try {
-            int responseStatus = response.getStatusLine().getStatusCode();
-            if (responseStatus != 200) {
-                Assert.fail("Status code " + responseStatus + " when sending request to " + endpoint);
-            } else {
-                responseString = EntityUtils.toString(response.getEntity());
-            }
-        } catch (IOException e) {
-            Assert.fail("Problem reading response from request to " + endpoint);
-        }
-
-        return responseString;
-    }
-
-    private URI validateEndpoint(String endpoint) {
-        URI uri = null;
-        try {
-            uri = new URI(endpoint);
-        } catch (URISyntaxException e) {
-            Assert.fail("Invalid endpoint: " + endpoint);
-        }
-        return uri;
-    }
-
-    private JSONObject buildJSON(Map<String, String> map) {
-        JSONObject object = new JSONObject();
-        for(Map.Entry<String, String> entry : map.entrySet()) {
-            object.put(entry.getKey(), entry.getValue());
-        }
-        return object;
-    }
-
-    private HttpClient buildClient() {
-        return HttpClientBuilder.create().build();
-    }
-
-    private RequestConfig buildConfig() {
-        return RequestConfig.custom().setConnectTimeout(10000).build();
-    }
-
-    private StringEntity buildEntity(JSONObject object) {
-        StringEntity entity = new StringEntity(object.toString(), "UTF-8");
-        BasicHeader basicHeader = new BasicHeader(HTTP.CONTENT_TYPE,"application/json");
-		entity.setContentType(basicHeader);
-		return entity;
-    }
-
-    private JSONObject parseJSONFile(String jSONFile, Map<String, String> savedValues) {
+    private JSONObject parseJSONFile(String jSONFile) {
         JSONObject jSONObjectFromFile = null;
-
         try {
             jSONObjectFromFile = (JSONObject) parser.parse(new FileReader(jsonFilePath + jSONFile));
         } catch (Exception e) {
             Assert.fail("Problem parsing JSON from file " + jSONFile);
         }
-
-        for(Object o : jSONObjectFromFile.entrySet()) {
-            String jSONEntry = o.toString();
-            if(jSONEntry.contains("((")) {
-                String param = jSONEntry.substring(jSONEntry.indexOf("((") + 2,jSONEntry.indexOf("))"));
-                jSONObjectFromFile.put(param,savedValues.get(param));
-            }
-        }
-
         return jSONObjectFromFile;
     }
-
-
-
 }
