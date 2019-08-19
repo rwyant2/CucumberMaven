@@ -59,7 +59,7 @@ Feature: Validate I can send a get request to a REST endpoint
     Then save the value of "id" from the response
 
   # "((id))" refers to the value saved from the response in the above step
-  # the "id" under name refers to the {id} in the url below
+  # the "id" under key refers to the {id} in the url below
     Then a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
       |type   |key |value |
       |segment|id  |((id))|
