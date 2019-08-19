@@ -52,7 +52,7 @@ Feature: Validate I can send a get request to a REST endpoint
   Scenario: (5) Set up test data and validate GET response against dynamic test data
     When a "post" request is sent to "http://dummy.restapiexample.com/api/v1/create" with the below data
        |type|key   |value    |
-       |body|name  |Megatron6|
+       |body|name  |Megatron|
        |body|salary|1000     |
        |body|age   |40       |
 
@@ -66,7 +66,7 @@ Feature: Validate I can send a get request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |Megatron6|
+      |employee_name  |Megatron|
       |employee_salary|1000     |
       |employee_age   |40       |
       |profile_image  ||
@@ -77,7 +77,7 @@ Feature: Validate I can send a get request to a REST endpoint
       |segment|id  |((id))|
 
     Then the response matches the JSON in "get-single-employee.json" and any below data
-      |employee_name|Megatron6|
+      |employee_name|Megatron|
       |id  |((id))   |
 
   Scenario: (7) GET request using a JSON file with less than expected keys
@@ -86,7 +86,7 @@ Feature: Validate I can send a get request to a REST endpoint
       |segment|id  |((id))|
 
     Then the response matches the JSON in "get-single-employee.json" and any below data
-      |employee_name|Megatron6|
+      |employee_name|Megatron|
       |id           |((id))   |
       |food         |banana   |
 
@@ -104,7 +104,7 @@ Feature: Validate I can send a get request to a REST endpoint
       |segment|id  |((id))|
 
     Then the response matches the JSON in "get-single-employee.json" and any below data
-      |employee_name|Megatron6|
+      |employee_name|Megatron|
       |id  |banana    |
 
   Scenario: (10) GET request using a JSON file and an invalid key
@@ -113,7 +113,7 @@ Feature: Validate I can send a get request to a REST endpoint
       |segment|id  |((id))|
 
     Then the response matches the JSON in "get-single-employee.json" and any below data
-      |employee_name|Megatron6|
+      |employee_name|Megatron|
       |banana       |((id))    |
 
   Scenario: (11) GET request using a JSON file and an invalid segment
@@ -122,7 +122,7 @@ Feature: Validate I can send a get request to a REST endpoint
       |segment|id  |banana|
 
     Then the response matches the JSON in "get-single-employee.json" and any below data
-      |employee_name|Megatron6|
+      |employee_name|Megatron|
       |id           |((id))    |
 
   Scenario: (12) GET request using a JSON file replacing one of the values
@@ -131,7 +131,7 @@ Feature: Validate I can send a get request to a REST endpoint
       |segment|id  |((id))|
 
     Then the response matches the JSON in "get-single-employee.json" and any below data
-      |employee_name  |Megatron6|
+      |employee_name  |Megatron|
       |id             |((id))    |
       |employee_salary|9000      |
 
@@ -142,7 +142,7 @@ Feature: Validate I can send a get request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |Megatron6|
+      |employee_name  |Megatron|
       |employee_salary|1000     |
       |employee_age   |40       |
       |profile_image  ||
@@ -154,7 +154,7 @@ Feature: Validate I can send a get request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))   |
-      |employee_name  |Megatron6|
+      |employee_name  |Megatron|
       |employee_salary|1000     |
       |employee_age   |40       |
       |profile_image  ||
@@ -168,7 +168,7 @@ Feature: Validate I can send a get request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |Megatron6|
+      |employee_name  |Megatron|
       |employee_age   |40       |
       |profile_image  ||
 
@@ -179,7 +179,7 @@ Feature: Validate I can send a get request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |Megatron6|
+      |employee_name  |Megatron|
       |employee_salary|banana   |
       |employee_age   |40       |
       |profile_image  ||
@@ -191,7 +191,7 @@ Feature: Validate I can send a get request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |Megatron6|
+      |employee_name  |Megatron|
       |employee_salary|1000     |
       |banana         |40       |
       |profile_image  ||
@@ -203,7 +203,7 @@ Feature: Validate I can send a get request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |Megatron6|
+      |employee_name  |Megatron|
       |employee_salary|1000     |
       |employee_age   |40       |
       |profile_image  ||

@@ -3,13 +3,13 @@ package stepdefs;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
-import utils.RESTUtils2;
+import utils.RESTUtils;
 
 import java.util.*;
 
-public class RESTStepDefs2 {
+public class RESTStepDefs {
 
-    private RESTUtils2 restUtils2 = new RESTUtils2();
+    private RESTUtils restUtils = new RESTUtils();
     private String response = null;
     private static Map<String, String> savedValues = new HashMap<String, String>();
 
@@ -41,7 +41,7 @@ public class RESTStepDefs2 {
             mapOut.add(entryOut);
         }
 
-        response = restUtils2.sendRequest(method, url, mapOut);
+        response = restUtils.sendRequest(method, url, mapOut);
 
     }
 
@@ -68,7 +68,7 @@ public class RESTStepDefs2 {
             mapOut.add(entryOut);
         }
 
-        response = restUtils2.sendJSONRequest(method, url, jsonFileName, mapOut);
+        response = restUtils.sendJSONRequest(method, url, jsonFileName, mapOut);
 
     }
 
@@ -95,40 +95,9 @@ public class RESTStepDefs2 {
             mapOut.add(entryOut);
         }
 
-        response = restUtils2.sendSoapUIRequest(reqName, soapUIFile, mapOut);
+        response = restUtils.sendSoapUIRequest(reqName, soapUIFile, mapOut);
 
     }
-
-
-//    @When("^a \"([^\"]*)\" request is sent to \"([^\"]*)\" with the values listed below$")
-//    public void a_request_is_sent_to_with_the_values_listed_below(String method, String endpoint, DataTable dt) {
-//        List<Map<String, String>> mapIn = dt.asMaps(String.class, String.class);
-//        List<Map<String, String>> mapOut = new ArrayList<Map<String, String>>();
-//
-//        Iterator<Map<String, String>> i = mapIn.iterator();
-//
-
-//
-//        //if a saved value is in the url itself, parse it here
-//        //i.e. endpoint.com/value
-//        //todo: test with multiple params
-//        while(endpoint.indexOf("((") > 0) {
-//            int start = endpoint.indexOf("((") + 2;
-//            int end = endpoint.indexOf("))");
-//            String param = endpoint.substring(start, end);
-//            endpoint = endpoint.replace("((" + param + "))",savedValues.get(param));
-//        }
-//
-//        response = RESTUtils.sendRequest(method, endpoint, mapOut);
-//    }
-//
-//    // The below two support simple name-value pairs. This doesn't support arrays and nested entities... yet.
-////    @When("^send a \"([^\"]*)\" request to endpoint-resource \"([^\"]*)\" with the below values$")
-////    public void send_a_request_to_endpoint_resource_with_the_below_values(String reqMethod, String endpoint, DataTable nameValuePairs) {
-////        Map<String, String> nameValueMap = nameValuePairs.asMap(String.class, String.class);
-////        response = RESTUtils.sendRequest(reqMethod, endpoint, nameValueMap);
-////    }
-////
 
     @Then("^the response comes back with the below values$")
     public void the_response_comes_back_with_the_below_values(DataTable nameValuePairs) {
@@ -143,19 +112,19 @@ public class RESTStepDefs2 {
                 mapOut.put(entry.getKey(),entry.getValue());
             }
         }
-        restUtils2.validateResponse(response, mapOut);
+        restUtils.validateResponse(response, mapOut);
     }
 
     @Then("^the response comes back with the below keys$")
     public void the_response_comes_back_with_the_below_keys(DataTable nameTable) {
         Map<String, String> nameMap = nameTable.asMap(String.class, String.class);
-        restUtils2.validateResponseNoValues(response, nameMap);
+        restUtils.validateResponseNoValues(response, nameMap);
     }
 
     @Then("^save the value of \"([^\"]*)\" from the response$")
     public void save_value_of_in_the_response (String name) {
         //todo: handle replacing existing value
-        savedValues.put(name,restUtils2.getResponseValue(name, response));
+        savedValues.put(name, restUtils.getResponseValue(name, response));
         System.out.println("saved value: " + name + " = " + savedValues.get(name));
     }
 
@@ -175,46 +144,7 @@ public class RESTStepDefs2 {
             }
         }
 
-        restUtils2.validateJSONResponse(response, jsonFileName, mapOut);
+        restUtils.validateJSONResponse(response, jsonFileName, mapOut);
     }
-
-//    @When("^the request \"([^\"]*)\" in SoapUI project \"([^\"]*)\" is sent$")
-//    public void send_the_request_in_SoapUI_project(String reqName, String soapUiProjectFile) {
-//        response = RESTUtils.sendSoapUIRequest(reqName, soapUiProjectFile, savedValues);
-//    }
-//
-////    //This should be able to support any JSON structure
-////    @When("^send a \"([^\"]*)\" request to endpoint-resource \"([^\"]*)\" with the JSON \"([^\"]*)\"$")
-////    public void send_a_request_to_endpoint_resource_with_the_JSON(String reqMethod, String endpoint, String jSONFile) {
-////        response = RESTUtils.sendRequest(reqMethod, endpoint, jSONFile);
-////
-////    }
-////
-//
-////
-////    @When("^send a \"([^\"]*)\" request to endpoint-resource \"([^\"]*)\"$")
-////    public void send_a_request_to_endpoint_resource(String reqName, String endpoint) {
-////        response = RESTUtils.sendRequestNoValues(reqName, endpoint);
-////    }
-////
-//    @Then("^the response comes back with the below keys$")
-//    public void the_response_comes_back_with_the_below_keys(DataTable nameTable) {
-//        Map<String, String> nameMap = nameTable.asMap(String.class, String.class);
-//        RESTUtils.validateResponseNoValues(response, nameMap);
-//    }
-//
-//    @Then("^the response matches the JSON in \"([^\"]*)\"$")
-//    public void the_response_matches_the_json_in (String filename) {
-//        RESTUtils.validateResponseJSON(response, filename, savedValues);
-//    }
-//
-
-////
-////    @When("^send a \"([^\"]*)\" request to endpoint-resource \"([^\"]*)\" with the previously saved id$")
-////    public void send_a_request_to_endpoint_resource_with_the_previously_saved_id(String reqType, String endpoint) {
-////        HashMap<String, String> map = new HashMap<String, String>();
-////        map.put("id",savedId);
-////        response = RESTUtils.sendRequest(reqType, endpoint, map);
-////    }
 
 }
