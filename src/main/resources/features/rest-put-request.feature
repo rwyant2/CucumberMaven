@@ -5,7 +5,7 @@ Feature: Validate I can send a put request to a REST endpoint
   Scenario: (1) Someone set us up the test data
     When a "post" request is sent to "http://dummy.restapiexample.com/api/v1/create" with the below data
       |type|key   |value  |
-      |body|name  |FortyOne|
+      |body|name  |FiftyFive|
       |body|salary|9000   |
       |body|age   |40     |
 
@@ -15,12 +15,12 @@ Feature: Validate I can send a put request to a REST endpoint
     When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
       |type   |key   |value   |
       |segment|id    |((id))  |
-      |body   |name  |FortyOne2|
+      |body   |name  |FiftyFive2|
       |body   |salary|9001    |
       |body   |age   |50      |
 
     Then the response comes back with the below values
-      |name  |FortyOne2|
+      |name  |FiftyFive2|
       |salary|9001    |
       |age   |50      |
 
@@ -30,7 +30,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FortyOne2|
+      |employee_name  |FiftyFive2|
       |employee_salary|9001     |
       |employee_age   |50       |
       |profile_image  ||
@@ -41,12 +41,12 @@ Feature: Validate I can send a put request to a REST endpoint
     When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
       |type   |key   |value    |
       |segment|id    |banana   |
-      |body   |name  |FortyOne3|
+      |body   |name  |FiftyFive3|
       |body   |salary|9002     |
       |body   |age   |51       |
 
     Then the response comes back with the below values
-      |name  |FortyOne3|
+      |name  |FiftyFive3|
       |salary|9002     |
       |age   |51       |
 
@@ -54,10 +54,10 @@ Feature: Validate I can send a put request to a REST endpoint
       |type   |key   |value   |
       |segment|id    |((id))  |
 
-# This will fail, it's still FortyOne2, 9001, 50
+# This will fail, it's still FiftyFive2, 9001, 50
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FortyOne3|
+      |employee_name  |FiftyFive3|
       |employee_salary|9002     |
       |employee_age   |51       |
       |profile_image  ||    
@@ -66,12 +66,12 @@ Feature: Validate I can send a put request to a REST endpoint
   Scenario: (4) Validate PUT request using the feature file but with a missing segment
     When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
       |type   |key   |value    |
-      |body   |name  |FortyOne4|
+      |body   |name  |FiftyFive4|
       |body   |salary|9003     |
       |body   |age   |52       |
 
     Then the response comes back with the below values
-      |name  |FortyOne4|
+      |name  |FiftyFive4|
       |salary|9003    |
       |age   |52      |
     
@@ -80,12 +80,12 @@ Feature: Validate I can send a put request to a REST endpoint
     When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
       |type   |key   |value    |
       |segment|id    |((id))   |
-      |body   |name  |FortyOne5|
+      |body   |name  |FiftyFive5|
       |body   |age   |55       |
 
 # ((null)) will always be a saved value so it can be used in situations like this
     Then the response comes back with the below values
-      |name  |FortyOne5|
+      |name  |FiftyFive5|
       |age   |55      |
       |salary|((null))|
 
@@ -96,7 +96,7 @@ Feature: Validate I can send a put request to a REST endpoint
 # behind the scenes, null = 0 when it comes to salary     
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FortyOne5|
+      |employee_name  |FiftyFive5|
       |employee_salary|0     |
       |employee_age   |55       |
       |profile_image  ||    
@@ -106,13 +106,13 @@ Feature: Validate I can send a put request to a REST endpoint
     When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
       |type   |key   |value  |
       |segment|id    |((id)) |
-      |body   |name  |FortyOne6|
+      |body   |name  |FiftyFive6|
       |body   |food  |banana |
       |body   |salary|9006   |
       |body   |age   |56     |
 
     Then the response comes back with the below values
-      |name  |FortyOne6|
+      |name  |FiftyFive6|
       |food  |banana |
       |salary|9006   |
       |age   |56     |
@@ -123,7 +123,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FortyOne6|
+      |employee_name  |FiftyFive6|
       |employee_salary|9006     |
       |employee_age   |56       |
       |profile_image  ||    
@@ -132,12 +132,12 @@ Feature: Validate I can send a put request to a REST endpoint
     When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
       |type   |key   |value    |
       |segment|id    |((id))   |
-      |body   |name  |FortyOne6|
+      |body   |name  |FiftyFive6|
       |body   |salary|9006   |
       |body   |age   |56     |
 
     Then the response comes back with the below values
-      |name  |FortyOne6|
+      |name  |FiftyFive6|
       |salary|9006   |
       |age   |56     |
 
@@ -147,7 +147,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FortyOne6|
+      |employee_name  |FiftyFive6|
       |employee_salary|9006     |
       |employee_age   |56       |
       |profile_image  ||  
@@ -166,7 +166,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FortyOne8|
+      |employee_name  |FiftyFive8|
       |employee_salary|10001     |
       |employee_age   |69       |
       |profile_image  ||
@@ -176,13 +176,13 @@ Feature: Validate I can send a put request to a REST endpoint
     When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" using the JSON file "update-employee-request.json" and any below data
       |type   |key   |value   |
       |segment|id    |banana  |
-      |body   |name  |FortyOne9|
+      |body   |name  |FiftyFive9|
       |body   |age   |50          |
       |body   |salary|9000        |
 
 # I realize I can do this without the JSON, but I want to test in-feature value replacement
     Then the response matches the JSON in "update-employee-request.json" and any below data
-      |name  |FortyOne9|
+      |name  |FiftyFive9|
       |age   |50          |
       |salary|9000        |
 
@@ -192,18 +192,192 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FortyOne9|
+      |employee_name  |FiftyFive9|
       |employee_salary|9000    |
       |employee_age   |50       |
       |profile_image  ||
 
-#  Scenario: (10) Validate PUT request using a JSON file with a missing segment
-#  Scenario: (11) Validate PUT request using a JSON file with a missing body element
-#  Scenario: (12) Validate PUT request using a JSON file with an extra body element
-#  Scenario: (13) Validate PUT request using a JSON file with no real updates
-#  Scenario: (14) Validate PUT request using a SoapUI file
-#  Scenario: (15) Validate PUT request using a SoapUI file with a bad segment
-#  Scenario: (16) Validate PUT request using a SoapUI file with a missing segment
-#  Scenario: (17) Validate PUT request using a SoapUI file with a missing body element
-#  Scenario: (18) Validate PUT request using a SoapUI file with an extra body element
-#  Scenario: (19) Validate PUT request using a SoapUI file with no real updates
+# This should straight up fail
+  Scenario: (10) Validate PUT request using a JSON file with a missing segment
+    When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" using the JSON file "update-employee-request.json" and any below data
+      ||
+
+    Then the response matches the JSON in "update-employee-request.json" and any below data
+      ||
+
+  Scenario: (11) Validate PUT request using a JSON file with a missing body element
+    When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" using the JSON file "update-employee-no-age.json" and any below data
+      |type   |key   |value   |
+      |segment|id    |((id))  |
+
+    Then the response matches the JSON in "update-employee-no-age.json" and any below data
+      |age|((null))|
+
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key   |value   |
+      |segment|id    |((id))  |
+
+    Then the response comes back with the below values
+      |id             |((id))|
+      |employee_name  |FiftyFive11|
+      |employee_salary|10011     |
+      |employee_age   |0       |
+      |profile_image  ||
+
+  Scenario: (12) Validate PUT request using a JSON file with an extra body element
+    When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" using the JSON file "update-employee-extra-key.json" and any below data
+      |type   |key   |value   |
+      |segment|id    |((id))  |
+
+    Then the response matches the JSON in "update-employee-extra-key.json" and any below data
+      ||
+
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key   |value   |
+      |segment|id    |((id))  |
+
+    Then the response comes back with the below values
+      |id             |((id))|
+      |employee_name  |FiftyFive12|
+      |employee_salary|10012     |
+      |employee_age   |73       |
+      |profile_image  ||
+  
+  Scenario: (13) Validate PUT request using a JSON file with no real updates
+    When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" using the JSON file "update-employee-extra-key.json" and any below data
+      |type   |key   |value   |
+      |segment|id    |((id))  |
+
+    Then the response matches the JSON in "update-employee-extra-key.json" and any below data
+      ||
+
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key   |value   |
+      |segment|id    |((id))  |
+
+    Then the response comes back with the below values
+      |id             |((id))|
+      |employee_name  |FiftyFive12|
+      |employee_salary|10012     |
+      |employee_age   |73       |
+      |profile_image  ||
+
+  Scenario: (14) Validate PUT request using a SoapUI file
+    When the request "Update" in SoapUI project "dummy.xml" is sent with any below data
+      |type   |key |value |
+      |segment|id  |((id))|
+
+    Then the response comes back with the below values
+      |name  |FiftyFive14|
+      |salary|8001   |
+      |age   |43     |
+
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key   |value   |
+      |segment|id    |((id))  |
+
+    Then the response comes back with the below values
+      |id             |((id))|
+      |employee_name  |FiftyFive14|
+      |employee_salary|8001   |
+      |employee_age   |43     |
+      |profile_image  ||
+
+# Same as Scenario 3, this should fail    
+  Scenario: (15) Validate PUT request using a SoapUI file with a bad segment
+    When the request "Update No Salary" in SoapUI project "dummy.xml" is sent with any below data
+      |type   |key |value |
+      |segment|id  |banana|
+
+    Then the response comes back with the below values
+      |name  |FiftyFive17|
+      |salary|((null))|
+      |age   |45     |
+
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key   |value   |
+      |segment|id    |((id))  |
+
+    Then the response comes back with the below values
+      |id             |((id))|
+      |employee_name  |FiftyFive17|
+      |employee_salary|((null))|
+      |employee_age   |45      |
+      |profile_image  ||
+
+
+  Scenario: (16) Validate PUT request using a SoapUI file with a missing segment
+    When the request "Update" in SoapUI project "dummy.xml" is sent with any below data
+      ||
+
+    Then the response comes back with the below values
+      |name  |FiftyFive14|
+      |salary|8001   |
+      |age   |43     |
+
+  Scenario: (17) Validate PUT request using a SoapUI file with a missing body element
+    When the request "Update No Salary" in SoapUI project "dummy.xml" is sent with any below data
+      |type   |key |value |
+      |segment|id  |((id))|
+
+    Then the response comes back with the below values
+      |name  |FiftyFive17|
+      |salary|((null))|
+      |age   |45     |
+
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key   |value |
+      |segment|id    |((id))|
+
+    Then the response comes back with the below values
+      |id             |((id))|
+      |employee_name  |FiftyFive17|
+      |employee_salary|0 |
+      |employee_age   |45       |
+      |profile_image  ||
+
+  Scenario: (18) Validate PUT request using a SoapUI file with an extra body element
+    When the request "Update Extra Element" in SoapUI project "dummy.xml" is sent with any below data
+      |type   |key |value |
+      |segment|id  |((id))|
+
+    Then the response comes back with the below values
+      |name  |FiftyFive18|
+      |salary|8006   |
+      |age   |47     |
+      |hungry|banana |
+
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key   |value   |
+      |segment|id    |((id))  |
+
+    Then the response comes back with the below values
+      |id             |((id))|
+      |employee_name  |FiftyFive18|
+      |employee_salary|8006   |
+      |employee_age   |47     |
+      |profile_image  ||
+
+  Scenario: (19) Validate PUT request using a SoapUI file with no real updates
+    When the request "Update" in SoapUI project "dummy.xml" is sent with any below data
+      |type   |key   |value |
+      |segment|id    |((id))|
+      |body   |name  |FiftyFive18|
+      |body   |salary|8006      |
+      |body   |age   |47        |
+
+    Then the response comes back with the below values
+      |name  |FiftyFive18|
+      |salary|8006   |
+      |age   |47     |
+
+    When a "get" request is sent to "http://dummy.restapiexample.com/api/v1/employee/{id}" with the below data
+      |type   |key   |value   |
+      |segment|id    |((id))  |
+
+    Then the response comes back with the below values
+      |id             |((id))|
+      |employee_name  |FiftyFive18|
+      |employee_salary|8006   |
+      |employee_age   |47     |
+      |profile_image  ||
