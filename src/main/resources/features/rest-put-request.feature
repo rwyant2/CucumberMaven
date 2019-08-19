@@ -5,7 +5,7 @@ Feature: Validate I can send a put request to a REST endpoint
   Scenario: (1) Someone set us up the test data
     When a "post" request is sent to "http://dummy.restapiexample.com/api/v1/create" with the below data
       |type|key   |value  |
-      |body|name  |FiftyFive|
+      |body|name  |Megatron|
       |body|salary|9000   |
       |body|age   |40     |
 
@@ -15,12 +15,12 @@ Feature: Validate I can send a put request to a REST endpoint
     When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
       |type   |key   |value   |
       |segment|id    |((id))  |
-      |body   |name  |FiftyFive2|
+      |body   |name  |Megatron2|
       |body   |salary|9001    |
       |body   |age   |50      |
 
     Then the response comes back with the below values
-      |name  |FiftyFive2|
+      |name  |Megatron2|
       |salary|9001    |
       |age   |50      |
 
@@ -30,7 +30,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive2|
+      |employee_name  |Megatron2|
       |employee_salary|9001     |
       |employee_age   |50       |
       |profile_image  ||
@@ -41,12 +41,12 @@ Feature: Validate I can send a put request to a REST endpoint
     When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
       |type   |key   |value    |
       |segment|id    |banana   |
-      |body   |name  |FiftyFive3|
+      |body   |name  |Megatron3|
       |body   |salary|9002     |
       |body   |age   |51       |
 
     Then the response comes back with the below values
-      |name  |FiftyFive3|
+      |name  |Megatron3|
       |salary|9002     |
       |age   |51       |
 
@@ -54,10 +54,10 @@ Feature: Validate I can send a put request to a REST endpoint
       |type   |key   |value   |
       |segment|id    |((id))  |
 
-# This will fail, it's still FiftyFive2, 9001, 50
+# This will fail, it's still Megatron2, 9001, 50
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive3|
+      |employee_name  |Megatron3|
       |employee_salary|9002     |
       |employee_age   |51       |
       |profile_image  ||    
@@ -66,12 +66,12 @@ Feature: Validate I can send a put request to a REST endpoint
   Scenario: (4) Validate PUT request using the feature file but with a missing segment
     When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
       |type   |key   |value    |
-      |body   |name  |FiftyFive4|
+      |body   |name  |Megatron4|
       |body   |salary|9003     |
       |body   |age   |52       |
 
     Then the response comes back with the below values
-      |name  |FiftyFive4|
+      |name  |Megatron4|
       |salary|9003    |
       |age   |52      |
     
@@ -80,12 +80,12 @@ Feature: Validate I can send a put request to a REST endpoint
     When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
       |type   |key   |value    |
       |segment|id    |((id))   |
-      |body   |name  |FiftyFive5|
+      |body   |name  |Megatron5|
       |body   |age   |55       |
 
 # ((null)) will always be a saved value so it can be used in situations like this
     Then the response comes back with the below values
-      |name  |FiftyFive5|
+      |name  |Megatron5|
       |age   |55      |
       |salary|((null))|
 
@@ -96,7 +96,7 @@ Feature: Validate I can send a put request to a REST endpoint
 # behind the scenes, null = 0 when it comes to salary     
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive5|
+      |employee_name  |Megatron5|
       |employee_salary|0     |
       |employee_age   |55       |
       |profile_image  ||    
@@ -106,13 +106,13 @@ Feature: Validate I can send a put request to a REST endpoint
     When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
       |type   |key   |value  |
       |segment|id    |((id)) |
-      |body   |name  |FiftyFive6|
+      |body   |name  |Megatron6|
       |body   |food  |banana |
       |body   |salary|9006   |
       |body   |age   |56     |
 
     Then the response comes back with the below values
-      |name  |FiftyFive6|
+      |name  |Megatron6|
       |food  |banana |
       |salary|9006   |
       |age   |56     |
@@ -123,7 +123,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive6|
+      |employee_name  |Megatron6|
       |employee_salary|9006     |
       |employee_age   |56       |
       |profile_image  ||    
@@ -132,12 +132,12 @@ Feature: Validate I can send a put request to a REST endpoint
     When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" with the below data
       |type   |key   |value    |
       |segment|id    |((id))   |
-      |body   |name  |FiftyFive6|
+      |body   |name  |Megatron6|
       |body   |salary|9006   |
       |body   |age   |56     |
 
     Then the response comes back with the below values
-      |name  |FiftyFive6|
+      |name  |Megatron6|
       |salary|9006   |
       |age   |56     |
 
@@ -147,7 +147,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive6|
+      |employee_name  |Megatron6|
       |employee_salary|9006     |
       |employee_age   |56       |
       |profile_image  ||  
@@ -166,7 +166,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive8|
+      |employee_name  |Megatron8|
       |employee_salary|10001     |
       |employee_age   |69       |
       |profile_image  ||
@@ -176,13 +176,13 @@ Feature: Validate I can send a put request to a REST endpoint
     When a "put" request is sent to "http://dummy.restapiexample.com/api/v1/update/{id}" using the JSON file "update-employee-request.json" and any below data
       |type   |key   |value   |
       |segment|id    |banana  |
-      |body   |name  |FiftyFive9|
+      |body   |name  |Megatron9|
       |body   |age   |50          |
       |body   |salary|9000        |
 
 # I realize I can do this without the JSON, but I want to test in-feature value replacement
     Then the response matches the JSON in "update-employee-request.json" and any below data
-      |name  |FiftyFive9|
+      |name  |Megatron9|
       |age   |50          |
       |salary|9000        |
 
@@ -192,7 +192,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive9|
+      |employee_name  |Megatron9|
       |employee_salary|9000    |
       |employee_age   |50       |
       |profile_image  ||
@@ -219,7 +219,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive11|
+      |employee_name  |Megatron11|
       |employee_salary|10011     |
       |employee_age   |0       |
       |profile_image  ||
@@ -238,7 +238,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive12|
+      |employee_name  |Megatron12|
       |employee_salary|10012     |
       |employee_age   |73       |
       |profile_image  ||
@@ -257,7 +257,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive12|
+      |employee_name  |Megatron12|
       |employee_salary|10012     |
       |employee_age   |73       |
       |profile_image  ||
@@ -268,7 +268,7 @@ Feature: Validate I can send a put request to a REST endpoint
       |segment|id  |((id))|
 
     Then the response comes back with the below values
-      |name  |FiftyFive14|
+      |name  |Megatron14|
       |salary|8001   |
       |age   |43     |
 
@@ -278,7 +278,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive14|
+      |employee_name  |Megatron14|
       |employee_salary|8001   |
       |employee_age   |43     |
       |profile_image  ||
@@ -290,7 +290,7 @@ Feature: Validate I can send a put request to a REST endpoint
       |segment|id  |banana|
 
     Then the response comes back with the below values
-      |name  |FiftyFive17|
+      |name  |Megatron17|
       |salary|((null))|
       |age   |45     |
 
@@ -300,7 +300,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive17|
+      |employee_name  |Megatron17|
       |employee_salary|((null))|
       |employee_age   |45      |
       |profile_image  ||
@@ -311,7 +311,7 @@ Feature: Validate I can send a put request to a REST endpoint
       ||
 
     Then the response comes back with the below values
-      |name  |FiftyFive14|
+      |name  |Megatron14|
       |salary|8001   |
       |age   |43     |
 
@@ -321,7 +321,7 @@ Feature: Validate I can send a put request to a REST endpoint
       |segment|id  |((id))|
 
     Then the response comes back with the below values
-      |name  |FiftyFive17|
+      |name  |Megatron17|
       |salary|((null))|
       |age   |45     |
 
@@ -331,7 +331,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive17|
+      |employee_name  |Megatron17|
       |employee_salary|0 |
       |employee_age   |45       |
       |profile_image  ||
@@ -342,7 +342,7 @@ Feature: Validate I can send a put request to a REST endpoint
       |segment|id  |((id))|
 
     Then the response comes back with the below values
-      |name  |FiftyFive18|
+      |name  |Megatron18|
       |salary|8006   |
       |age   |47     |
       |hungry|banana |
@@ -353,7 +353,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive18|
+      |employee_name  |Megatron18|
       |employee_salary|8006   |
       |employee_age   |47     |
       |profile_image  ||
@@ -362,12 +362,12 @@ Feature: Validate I can send a put request to a REST endpoint
     When the request "Update" in SoapUI project "dummy.xml" is sent with any below data
       |type   |key   |value |
       |segment|id    |((id))|
-      |body   |name  |FiftyFive18|
+      |body   |name  |Megatron18|
       |body   |salary|8006      |
       |body   |age   |47        |
 
     Then the response comes back with the below values
-      |name  |FiftyFive18|
+      |name  |Megatron18|
       |salary|8006   |
       |age   |47     |
 
@@ -377,7 +377,7 @@ Feature: Validate I can send a put request to a REST endpoint
 
     Then the response comes back with the below values
       |id             |((id))|
-      |employee_name  |FiftyFive18|
+      |employee_name  |Megatron18|
       |employee_salary|8006   |
       |employee_age   |47     |
       |profile_image  ||
